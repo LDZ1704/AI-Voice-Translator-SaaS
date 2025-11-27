@@ -71,9 +71,7 @@ CREATE TABLE AuditLogs (
     CONSTRAINT FK_AuditLogs_Users FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE SET NULL
 );
 
--- =============================================
 -- Indexes for Performance
--- =============================================
 CREATE INDEX IX_AudioFiles_UserId ON AudioFiles(UserId);
 CREATE INDEX IX_AudioFiles_Status ON AudioFiles(Status);
 CREATE INDEX IX_Transcripts_AudioFileId ON Transcripts(AudioFileId);
@@ -81,21 +79,6 @@ CREATE INDEX IX_Translations_TranscriptId ON Translations(TranscriptId);
 CREATE INDEX IX_Outputs_TranslationId ON Outputs(TranslationId);
 CREATE INDEX IX_AuditLogs_UserId ON AuditLogs(UserId);
 CREATE INDEX IX_AuditLogs_Timestamp ON AuditLogs(Timestamp);
-
-
-INSERT INTO Users (Email, PasswordHash, DisplayName, Role, SubscriptionTier)
-VALUES 
-    ('admin@aivt.com', 
-     'AQAAAAIAAYagAAAAEMZZ8eKqT3vqR8Hx5J6xQVbN6X+VzYzJwU4FqE7xR3mN5gH2xK9sL7tM4nP8qW1', 
-     'Admin User', 'Admin', 'Premium');
--- Note: Hash for password "Admin@123" - change in production!
-
-INSERT INTO Users (Email, PasswordHash, DisplayName, Role, SubscriptionTier)
-VALUES 
-    ('test@user.com', 
-     'AQAAAAIAAYagAAAAELmK7vRqJ5nT4pW9xE3yDfC8sN2mH6bQ1zL5rV0tX8kA4jY7gU3wI9oF6cB2eN1', 
-     'Test User', 'User', 'Free');
--- Note: Hash for password "Test@123" - change in production!
 GO
 
 CREATE PROCEDURE sp_GetUserDashboardStats
@@ -173,6 +156,14 @@ BEGIN
 END;
 GO
 
---USE master
---DROP DATABASE AIVoiceTranslator
---GO
+USE master
+DROP DATABASE AIVoiceTranslator
+GO
+
+USE AIVoiceTranslator;
+GO
+SELECT * FROM Users;
+SELECT * FROM AudioFiles;
+SELECT * FROM Transcripts;
+SELECT * FROM Translations;
+GO

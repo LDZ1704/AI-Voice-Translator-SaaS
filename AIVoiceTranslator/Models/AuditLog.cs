@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AI_Voice_Translator_SaaS.Models
+namespace AIVoiceTranslator.Models
 {
     public class AuditLog
     {
@@ -24,7 +24,6 @@ namespace AI_Voice_Translator_SaaS.Models
 
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 
-        // Navigation properties
         [ForeignKey(nameof(UserId))]
         public virtual User? User { get; set; }
     }

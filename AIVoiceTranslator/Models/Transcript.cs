@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AI_Voice_Translator_SaaS.Models
+namespace AIVoiceTranslator.Models
 {
     public class Transcript
     {
@@ -18,14 +18,13 @@ namespace AI_Voice_Translator_SaaS.Models
 
         [Required]
         [MaxLength(10)]
-        public string DetectedLanguage { get; set; } // en, vi, ja, zh, fr
+        public string DetectedLanguage { get; set; }
 
         [Range(0, 100)]
         public decimal? Confidence { get; set; }
 
         public DateTime ProcessedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation properties
         [ForeignKey(nameof(AudioFileId))]
         public virtual AudioFile AudioFile { get; set; }
 

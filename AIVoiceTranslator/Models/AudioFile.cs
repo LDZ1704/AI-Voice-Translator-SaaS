@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AI_Voice_Translator_SaaS.Models
+namespace AIVoiceTranslator.Models
 {
     public class AudioFile
     {
@@ -24,14 +24,11 @@ namespace AI_Voice_Translator_SaaS.Models
         public long FileSizeBytes { get; set; }
 
         public int? DurationSeconds { get; set; }
-
         public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
 
-        [Required]
         [MaxLength(20)]
-        public string Status { get; set; } = "Pending"; // Pending, Processing, Completed, Failed
+        public string Status { get; set; } = "Pending";
 
-        // Navigation properties
         [ForeignKey(nameof(UserId))]
         public virtual User User { get; set; }
 

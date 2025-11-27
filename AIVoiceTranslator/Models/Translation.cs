@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace AI_Voice_Translator_SaaS.Models
+namespace AIVoiceTranslator.Models
 {
     public class Translation
     {
@@ -19,7 +19,6 @@ namespace AI_Voice_Translator_SaaS.Models
         [Required]
         public string TranslatedText { get; set; }
 
-        [Required]
         [MaxLength(50)]
         public string TranslationEngine { get; set; } = "Gemini";
 
@@ -28,7 +27,6 @@ namespace AI_Voice_Translator_SaaS.Models
         [Range(1, 5)]
         public int? UserRating { get; set; }
 
-        // Navigation properties
         [ForeignKey(nameof(TranscriptId))]
         public virtual Transcript Transcript { get; set; }
 

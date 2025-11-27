@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace AI_Voice_Translator_SaaS.Models
+namespace AIVoiceTranslator.Models
 {
     public class User
     {
@@ -20,21 +20,16 @@ namespace AI_Voice_Translator_SaaS.Models
         [MaxLength(100)]
         public string DisplayName { get; set; }
 
-        [Required]
         [MaxLength(20)]
-        public string Role { get; set; } = "User"; // User, Admin
+        public string Role { get; set; } = "User";
 
-        [Required]
         [MaxLength(20)]
-        public string SubscriptionTier { get; set; } = "Free"; // Free, Premium
+        public string SubscriptionTier { get; set; } = "Free";
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
         public DateTime? LastLoginAt { get; set; }
-
         public bool IsActive { get; set; } = true;
 
-        // Navigation properties
         public virtual ICollection<AudioFile> AudioFiles { get; set; } = new List<AudioFile>();
         public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
     }
