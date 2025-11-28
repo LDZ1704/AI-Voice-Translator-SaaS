@@ -1,4 +1,5 @@
-﻿using AIVoiceTranslator.Models;
+﻿using AI_Voice_Translator_SaaS.Data;
+using AI_Voice_Translator_SaaS.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,7 +7,7 @@ namespace AIVoiceTranslator.Data
 {
     public static class SeedData
     {
-        public static async Task Initialize(ApplicationDbContext context)
+        public static async Task Initialize(AivoiceTranslatorContext context)
         {
             await context.Database.MigrateAsync();
 

@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using AIVoiceTranslator.Models;
+using AI_Voice_Translator_SaaS.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace AIVoiceTranslator.Controllers
+namespace AI_Voice_Translator_SaaS.Controllers
 {
     public class HomeController : Controller
     {
