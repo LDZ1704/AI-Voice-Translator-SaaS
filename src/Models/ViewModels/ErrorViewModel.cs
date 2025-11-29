@@ -1,4 +1,4 @@
-namespace AI_Voice_Translator_SaaS.Models
+namespace AI_Voice_Translator_SaaS.Models.ViewModels
 {
     public class ErrorViewModel
     {

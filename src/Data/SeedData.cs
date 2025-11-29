@@ -23,7 +23,8 @@ namespace AIVoiceTranslator.Data
                 Email = "admin@aivt.com",
                 DisplayName = "Admin User",
                 Role = "Admin",
-                SubscriptionTier = "Premium"
+                SubscriptionTier = "Premium",
+                IsActive = true
             };
             admin.PasswordHash = passwordHasher.HashPassword(admin, "Admin@123");
 

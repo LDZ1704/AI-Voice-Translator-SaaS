@@ -1,8 +1,196 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Trang chủ";
+    var isLoggedIn = !string.IsNullOrEmpty(Context.Session.GetString("UserId"));
+    var userName = Context.Session.GetString("UserName");
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="hero-section bg-gradient-primary text-white py-5" style="background: var(--gradient-blue); min-height: 600px;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 fade-in">
+                <h1 class="display-3 fw-bold mb-4">
+                    AI Voice Translator
+                </h1>
+                <p class="lead mb-4">
+                    Chuyển đổi giọng nói thành văn bản, dịch sang ngôn ngữ khác và tạo file âm thanh mới -
+                    Tất cả chỉ trong vài giây với công nghệ AI tiên tiến.
+                </p>
+
+                @if (isLoggedIn)
+                {
+                    <div class="d-grid gap-2 d-md-flex">
+                        <a asp-controller="Audio" asp-action="Upload" class="btn btn-light btn-lg px-5">
+                            <i class="bi bi-cloud-upload"></i> Tải lên ngay
+                        </a>
+                        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-light btn-lg px-5">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-grid gap-2 d-md-flex">
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg px-5">
+                            <i class="bi bi-person-plus"></i> Đăng ký miễn phí
+                        </a>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-light btn-lg px-5">
+                            <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
+                        </a>
+                    </div>
+                }
+            </div>
+
+            <div class="col-lg-6 d-none d-lg-block text-center">
+                <div class="position-relative">
+                    <i class="bi bi-soundwave display-1" style="font-size: 15rem; opacity: 0.2;"></i>
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                        <i class="bi bi-translate text-white" style="font-size: 8rem;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">Tính năng nổi bật</h2>
+            <p class="text-muted">Giải pháp toàn diện cho việc dịch thuật giọng nói</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                             style="width: 80px; height: 80px;">
+                            <i class="bi bi-mic-fill" style="font-size: 2rem;"></i>
+                        </div>
+                        <h4 class="card-title mb-3">Nhận dạng giọng nói</h4>
+                        <p class="card-text text-muted">
+                            Chuyển đổi file âm thanh thành văn bản với độ chính xác cao nhờ công nghệ Google Speech-to-Text
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                             style="width: 80px; height: 80px;">
+                            <i class="bi bi-translate" style="font-size: 2rem;"></i>
+                        </div>
+                        <h4 class="card-title mb-3">Dịch thuật thông minh</h4>
+                        <p class="card-text text-muted">
+                            Dịch văn bản sang 5+ ngôn ngữ với AI Gemini, giữ nguyên ngữ nghĩa và ngữ cảnh
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                             style="width: 80px; height: 80px;">
+                            <i class="bi bi-soundwave" style="font-size: 2rem;"></i>
+                        </div>
+                        <h4 class="card-title mb-3">Tạo giọng nói tự nhiên</h4>
+                        <p class="card-text text-muted">
+                            Chuyển văn bản dịch thành file âm thanh với giọng đọc tự nhiên như người thật
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-3">Cách sử dụng</h2>
+            <p class="text-muted">Chỉ 3 bước đơn giản</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="step-number bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                     style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">
+                    1
+                </div>
+                <h5 class="mb-3">Tải lên file âm thanh</h5>
+                <p class="text-muted">Hỗ trợ MP3, WAV, M4A (tối đa 20MB)</p>
+            </div>
+
+            <div class="col-md-4 text-center">
+                <div class="step-number bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                     style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">
+                    2
+                </div>
+                <h5 class="mb-3">Chọn ngôn ngữ dịch</h5>
+                <p class="text-muted">English, Tiếng Việt, 日本語, và nhiều hơn</p>
+            </div>
+
+            <div class="col-md-4 text-center">
+                <div class="step-number bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                     style="width: 60px; height: 60px; font-size: 1.5rem; font-weight: bold;">
+                    3
+                </div>
+                <h5 class="mb-3">Nhận kết quả</h5>
+                <p class="text-muted">Tải về file âm thanh đã dịch trong vài giây</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5 bg-gradient-primary text-white" style="background: var(--gradient-blue-indigo);">
+    <div class="container">
+        <div class="row text-center g-4">
+            <div class="col-md-3">
+                <h2 class="display-4 fw-bold">5+</h2>
+                <p class="mb-0">Ngôn ngữ hỗ trợ</p>
+            </div>
+            <div class="col-md-3">
+                <h2 class="display-4 fw-bold">&lt;60s</h2>
+                <p class="mb-0">Thời gian xử lý</p>
+            </div>
+            <div class="col-md-3">
+                <h2 class="display-4 fw-bold">90%</h2>
+                <p class="mb-0">Độ chính xác</p>
+            </div>
+            <div class="col-md-3">
+                <h2 class="display-4 fw-bold">Free</h2>
+                <p class="mb-0">Dùng thử miễn phí</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="card border-0 shadow-custom bg-gradient-primary text-white" style="background: var(--gradient-blue);">
+            <div class="card-body text-center py-5">
+                <h2 class="fw-bold mb-3">Sẵn sàng bắt đầu?</h2>
+                <p class="lead mb-4">Đăng ký miễn phí và trải nghiệm ngay hôm nay</p>
+
+                @if (!isLoggedIn)
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg px-5">
+                        <i class="bi bi-person-plus"></i> Đăng ký ngay - Miễn phí
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Audio" asp-action="Upload" class="btn btn-light btn-lg px-5">
+                        <i class="bi bi-cloud-upload"></i> Tải lên file ngay
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
