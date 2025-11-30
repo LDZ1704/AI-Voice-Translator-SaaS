@@ -1,9 +1,11 @@
 ﻿using AI_Voice_Translator_SaaS.Helpers;
 using AI_Voice_Translator_SaaS.Interfaces;
+using AI_Voice_Translator_SaaS.Jobs;
 using AI_Voice_Translator_SaaS.Models;
 using AI_Voice_Translator_SaaS.Models.ViewModels;
 using AI_Voice_Translator_SaaS.Repositories;
 using AI_Voice_Translator_SaaS.Services;
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AI_Voice_Translator_SaaS.Controllers
@@ -82,12 +84,15 @@ namespace AI_Voice_Translator_SaaS.Controllers
 
                 await LogAuditAsync(userId, "Upload", $"Uploaded file: {file.FileName}");
 
-                _logger.LogInformation($"User {userId} uploaded file {file.FileName}");
+                BackgroundJob.Enqueue<ProcessAudioJob>(job =>
+                    job.ProcessAsync(audioFile.Id, targetLanguage));
+
+                _logger.LogInformation($"User {userId} uploaded file {file.FileName}. Job enqueued.");
 
                 return Json(new AudioUploadResponseDto
                 {
                     Success = true,
-                    Message = "Tải lên thành công",
+                    Message = "Tải lên thành công. Đang xử lý...",
                     AudioFileId = audioFile.Id,
                     FileName = audioFile.FileName,
                     FileSizeBytes = audioFile.FileSizeBytes
@@ -161,6 +166,43 @@ namespace AI_Voice_Translator_SaaS.Controllers
                 _logger.LogError(ex, "Error deleting file");
                 return Json(new { success = false, message = "Lỗi khi xóa file" });
             }
+        }
+
+        //GET: /Audio/GetStatus/{id}
+        [HttpGet]
+        public async Task<IActionResult> GetStatus(Guid id)
+        {
+            var audioFile = await _unitOfWork.AudioFiles.GetByIdAsync(id);
+            if (audioFile == null)
+            {
+                return NotFound();
+            }
+
+            return Json(new
+            {
+                status = audioFile.Status,
+                fileName = audioFile.FileName
+            });
+        }
+
+        //GET: /Audio/Processing/{id}
+        [HttpGet]
+        public async Task<IActionResult> Processing(Guid id)
+        {
+            var audioFile = await _unitOfWork.AudioFiles.GetByIdAsync(id);
+            if (audioFile == null)
+            {
+                return NotFound();
+            }
+
+            var dto = new AudioFileDto
+            {
+                Id = audioFile.Id,
+                FileName = audioFile.FileName,
+                Status = audioFile.Status
+            };
+
+            return View(dto);
         }
 
         private async Task LogAuditAsync(Guid userId, string action, string details = null)

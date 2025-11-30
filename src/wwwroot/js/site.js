@@ -103,10 +103,12 @@ class AudioUploader {
                 return xhr;
             },
             success: function (response) {
-                $('#progressText').text('✓ Hoàn thành! Đang chuyển hướng...');
-                setTimeout(() => {
-                    window.location.href = '/Dashboard';
-                }, 1500);
+                if (response.success) {
+                    $('#progressText').text('✓ Hoàn thành! Đang chuyển hướng...');
+                    setTimeout(() => {
+                        window.location.href = '/Audio/Processing/' + response.audioFileId;
+                    }, 1500);
+                }
             },
             error: function (xhr, status, error) {
                 alert('Lỗi: ' + (xhr.responseJSON?.message || 'Không thể tải lên file'));
