@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using AI_Voice_Translator_SaaS.Models;
+using AI_Voice_Translator_SaaS.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AI_Voice_Translator_SaaS.Controllers

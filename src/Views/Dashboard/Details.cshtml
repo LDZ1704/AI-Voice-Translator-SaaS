@@ -1,0 +1,206 @@
+﻿@model AI_Voice_Translator_SaaS.Models.ViewModels.AudioFileDto
+
+@{
+    ViewData["Title"] = "Chi tiết file";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <a asp-action="Index" class="btn btn-outline-secondary mb-3">
+                <i class="bi bi-arrow-left"></i> Quay lại Dashboard
+            </a>
+            <h2 class="fw-bold"><i class="bi bi-file-earmark-music"></i> Chi tiết file</h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- File Info -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-custom">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">Thông tin file</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="text-muted small">Tên file</label>
+                        <p class="mb-0"><strong>@Model.FileName</strong></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Kích thước</label>
+                        <p class="mb-0">@Model.FileSizeMB MB</p>
+                    </div>
+                    @if (Model.DurationSeconds.HasValue)
+                    {
+                        <div class="mb-3">
+                            <label class="text-muted small">Thời lượng</label>
+                            <p class="mb-0">@(Model.DurationSeconds / 60)m @(Model.DurationSeconds % 60)s</p>
+                        </div>
+                    }
+                    <div class="mb-3">
+                        <label class="text-muted small">Trạng thái</label>
+                        <p class="mb-0">
+                            @if (Model.Status == "Completed")
+                            {
+                                <span class="badge bg-success">
+                                    <i class="bi bi-check-circle"></i> Hoàn thành
+                                </span>
+                            }
+                            else if (Model.Status == "Pending")
+                            {
+                                <span class="badge bg-warning">
+                                    <i class="bi bi-clock"></i> Chờ xử lý
+                                </span>
+                            }
+                            else if (Model.Status == "Processing")
+                            {
+                                <span class="badge bg-info">
+                                    <i class="bi bi-arrow-repeat"></i> Đang xử lý
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="bi bi-x-circle"></i> Lỗi
+                                </span>
+                            }
+                        </p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="text-muted small">Ngày tải lên</label>
+                        <p class="mb-0">@Model.UploadedAtFormatted</p>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="/Audio/Download/@Model.Id" class="btn btn-success">
+                            <i class="bi bi-download"></i> Tải xuống
+                        </a>
+                        <button class="btn btn-danger" onclick="deleteFile('@Model.Id')">
+                            <i class="bi bi-trash"></i> Xóa file
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transcript & Translations -->
+        <div class="col-lg-8">
+            @if (Model.Transcript != null)
+            {
+                <!-- Original Transcript -->
+                <div class="card shadow-custom mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="bi bi-mic"></i> Văn bản gốc</h5>
+                        <small class="text-muted">
+                            Ngôn ngữ: @Model.Transcript.DetectedLanguage
+                            @if (Model.Transcript.Confidence.HasValue)
+                            {
+                                <span>| Độ chính xác: @Model.Transcript.Confidence.Value%</span>
+                            }
+                        </small>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">@Model.Transcript.OriginalText</p>
+                    </div>
+                </div>
+
+                <!-- Translations -->
+                @if (Model.Translations != null && Model.Translations.Any())
+                {
+                    @foreach (var translation in Model.Translations)
+                    {
+                        <div class="card shadow-custom mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-translate"></i> Bản dịch: @translation.TargetLanguage
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-3">@translation.TranslatedText</p>
+
+                                @if (translation.Output != null)
+                                {
+                                    <div class="alert alert-success">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div>
+                                                <i class="bi bi-soundwave"></i>
+                                                <strong>File âm thanh đã tạo</strong>
+                                                <br>
+                                                <small>Giọng: @translation.Output.VoiceType | Lượt tải: @translation.Output.DownloadCount</small>
+                                            </div>
+                                            <a href="@translation.Output.OutputFileUrl" class="btn btn-success">
+                                                <i class="bi bi-download"></i> Tải về
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-clock"></i> Đang tạo file âm thanh...
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            }
+            else
+            {
+                <div class="card shadow-custom">
+                    <div class="card-body text-center py-5">
+                        @if (Model.Status == "Pending")
+                        {
+                            <i class="bi bi-hourglass-split text-warning" style="font-size: 3rem;"></i>
+                            <p class="mt-3 text-muted">File đang chờ xử lý...</p>
+                        }
+                        else if (Model.Status == "Processing")
+                        {
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Đang xử lý...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Đang xử lý file...</p>
+                        }
+                        else
+                        {
+                            <i class="bi bi-exclamation-triangle text-danger" style="font-size: 3rem;"></i>
+                            <p class="mt-3 text-muted">Có lỗi xảy ra khi xử lý file</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function deleteFile(fileId) {
+            if (confirm('Bạn có chắc muốn xóa file này?')) {
+                $.ajax({
+                    url: '/Audio/Delete/' + fileId,
+                    type: 'POST',
+                    success: function(response) {
+                        if (response.success) {
+                            alert('Đã xóa file thành công');
+                            window.location.href = '/Dashboard';
+                        } else {
+                            alert('Lỗi: ' + response.message);
+                        }
+                    }
+                });
+            }
+        }
+
+        @if (Model.Status == "Processing" || Model.Status == "Pending")
+        {
+                <text>
+                setTimeout(function() {
+                    location.reload();
+                }, 5000);
+                </text>
+        }
+    </script>
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">

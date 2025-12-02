@@ -1,22 +1,212 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+:root {
+    /* Primary Colors - Blue */
+    --blue-primary: #3b82f6;
+    --blue-hover: #2563eb;
+    --blue-light: #eff6ff;
+    --blue-100: #dbeafe;
+    --blue-border: rgb(59, 130, 246, 0.5);
+    /* Success Colors - Green */
+    --green-primary: #22c55e;
+    --green-hover: #16a34a;
+    --green-light: #dcfce7;
+    --green-100: #bbf7d0;
+    --green-200: #86efac;
+    --green-text: #15803d;
+    /* Error/Danger Colors - Red */
+    --red-primary: #ef4444;
+    --red-hover: #dc2626;
+    --red-light: #fee2e2;
+    --red-100: #fecaca;
+    --red-200: #fca5a5;
+    --red-text: #991b1b;
+    /* Background Colors */
+    --bg-white: #ffffff;
+    --bg-backdrop: rgba(0, 0, 0, 0.5);
+    --bg-semi-transparent: rgba(255, 255, 255, 0.5);
+    --bg-zinc-50: #fafafa;
+    --bg-zinc-100: #f4f4f5;
+    --bg-modal-overlay: rgba(0, 0, 0, 0.8);
+    /* Background Gradients */
+    --gradient-blue: linear-gradient(to bottom right, #0ea5e9 0%, #3b82f6 100%);
+    --gradient-yellow-orange: linear-gradient(to bottom right, #fbbf24 0%, #f97316 50%, #ec4899 100%);
+    --gradient-blue-indigo: linear-gradient(to bottom right, #0ea5e9 0%, #6366f1 100%);
+    --gradient-blue-indigo-light: linear-gradient(to bottom right, #bfdbfe 0%, #c7d2fe 100%);
+    /* Background Pattern */
+    --grid-pattern: repeating-linear-gradient(0deg, rgba(224, 224, 224, 0.3) 0px, rgba(224, 224, 224, 0.3) 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, rgba(224, 224, 224, 0.3) 0px, rgba(224, 224, 224, 0.3) 1px, transparent 1px, transparent 40px);
+    /* Typography */
+    --font-primary: "Be Vietnam Pro", sans-serif;
+    --font-mono: "Be Vietnam Pro", monospace;
 }
 
 body {
-  margin-bottom: 60px;
+    font-family: var(--font-primary);
+    background: var(--bg-white);
+    color: #1f2937;
+    min-height: 100vh;
+}
+
+.navbar-dark {
+    background: var(--gradient-blue) !important;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--blue-100) !important;
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background: var(--blue-primary);
+    border-color: var(--blue-primary);
+    font-weight: 600;
+    padding: 0.75rem 2rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--blue-hover);
+    border-color: var(--blue-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+.btn-success {
+    background: var(--green-primary);
+    border-color: var(--green-primary);
+}
+
+.btn-success:hover {
+    background: var(--green-hover);
+    border-color: var(--green-hover);
+}
+
+.btn-danger {
+    background: var(--red-primary);
+    border-color: var(--red-primary);
+}
+
+.btn-danger:hover {
+    background: var(--red-hover);
+    border-color: var(--red-hover);
+}
+
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.card-header {
+    background: var(--gradient-blue);
+    color: white;
+    font-weight: 700;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.form-control:focus {
+    border-color: var(--blue-primary);
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+.form-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.invalid-feedback {
+    color: var(--red-primary);
+    font-size: 0.875rem;
+}
+
+.alert-success {
+    background: var(--green-light);
+    border-color: var(--green-200);
+    color: var(--green-text);
+}
+
+.alert-danger {
+    background: var(--red-light);
+    border-color: var(--red-200);
+    color: var(--red-text);
+}
+
+.alert-info {
+    background: var(--blue-light);
+    border-color: var(--blue-100);
+    color: #1e40af;
+}
+
+.bg-gradient-primary {
+    background: var(--gradient-blue);
+}
+
+.bg-gradient-orange {
+    background: var(--gradient-yellow-orange);
+}
+
+.bg-grid-pattern {
+    background-image: var(--grid-pattern);
+}
+
+.text-primary-custom {
+    color: var(--blue-primary) !important;
+}
+
+.shadow-custom {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+
+    .btn-primary {
+        padding: 0.5rem 1.5rem;
+    }
+}
+
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+}
+
+.step-number {
+    font-family: var(--font-primary);
 }

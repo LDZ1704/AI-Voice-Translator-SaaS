@@ -1,0 +1,139 @@
+﻿@model AI_Voice_Translator_SaaS.Models.ViewModels.AudioFileDto
+
+@{
+    ViewData["Title"] = "Đang xử lý";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-custom">
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
+                            <span class="visually-hidden">Đang xử lý...</span>
+                        </div>
+                    </div>
+
+                    <h3 class="mb-3">Đang xử lý file của bạn</h3>
+                    <p class="text-muted mb-4">File: <strong>@Model.FileName</strong></p>
+
+                    <!-- Processing Stages -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light" id="stage-stt">
+                                <div class="card-body">
+                                    <i class="bi bi-mic-fill text-muted fs-2"></i>
+                                    <h6 class="mt-2 mb-0">Speech-to-Text</h6>
+                                    <small class="text-muted" id="status-stt">Chờ xử lý...</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light" id="stage-translation">
+                                <div class="card-body">
+                                    <i class="bi bi-translate text-muted fs-2"></i>
+                                    <h6 class="mt-2 mb-0">Translation</h6>
+                                    <small class="text-muted" id="status-translation">Chờ xử lý...</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-0 bg-light" id="stage-tts">
+                                <div class="card-body">
+                                    <i class="bi bi-soundwave text-muted fs-2"></i>
+                                    <h6 class="mt-2 mb-0">Text-to-Speech</h6>
+                                    <small class="text-muted" id="status-tts">Chờ xử lý...</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress mb-4" style="height: 30px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                             role="progressbar" style="width: 0%;" id="progressBar">
+                            <span id="progressText">0%</span>
+                        </div>
+                    </div>
+
+                    <p class="text-muted">
+                        <i class="bi bi-info-circle"></i>
+                        Quá trình này có thể mất từ 30-60 giây. Vui lòng không đóng trang này.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let checkCount = 0;
+        const maxChecks = 60; // 60 checks × 2s = 2 minutes max
+        const audioFileId = '@Model.Id';
+
+        function checkStatus() {
+            $.ajax({
+                url: '/Audio/GetStatus/' + audioFileId,
+                type: 'GET',
+                success: function(data) {
+                    checkCount++;
+
+                    if (data.status === 'Processing') {
+                        updateProgress(33, 'Đang xử lý...');
+                        updateStage('stt', 'processing', 'Đang xử lý...');
+                    } else if (data.status === 'Completed') {
+                        updateProgress(100, 'Hoàn thành!');
+                        updateStage('stt', 'completed', '✓ Hoàn thành');
+                        updateStage('translation', 'completed', '✓ Hoàn thành');
+                        updateStage('tts', 'completed', '✓ Hoàn thành');
+
+                        setTimeout(function() {
+                            window.location.href = '/Dashboard/Details/' + audioFileId;
+                        }, 1500);
+                        return;
+                    } else if (data.status === 'Failed') {
+                        updateProgress(100, 'Lỗi!');
+                        alert('Có lỗi xảy ra khi xử lý file. Vui lòng thử lại.');
+                        window.location.href = '/Dashboard';
+                        return;
+                    }
+
+                    if (checkCount < maxChecks) {
+                        setTimeout(checkStatus, 2000);
+                    } else {
+                        alert('Quá trình xử lý đang mất nhiều thời gian. Vui lòng kiểm tra Dashboard sau.');
+                        window.location.href = '/Dashboard';
+                    }
+                },
+                error: function() {
+                    console.error('Error checking status');
+                    if (checkCount < maxChecks) {
+                        setTimeout(checkStatus, 2000);
+                    }
+                }
+            });
+        }
+
+        function updateProgress(percent, text) {
+            $('#progressBar').css('width', percent + '%');
+            $('#progressText').text(text);
+        }
+
+        function updateStage(stage, status, text) {
+            const stageCard = $('#stage-' + stage);
+            const statusText = $('#status-' + stage);
+
+            stageCard.removeClass('bg-light').addClass('bg-success-subtle');
+            stageCard.find('i').removeClass('text-muted').addClass('text-success');
+            statusText.text(text).removeClass('text-muted').addClass('text-success');
+        }
+
+        $(document).ready(function() {
+            setTimeout(checkStatus, 2000);
+        });
+    </script>
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
