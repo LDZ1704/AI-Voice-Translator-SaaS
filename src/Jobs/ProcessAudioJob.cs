@@ -1,7 +1,6 @@
 ﻿using AI_Voice_Translator_SaaS.Interfaces;
 using AI_Voice_Translator_SaaS.Models;
 using AI_Voice_Translator_SaaS.Repositories;
-using AI_Voice_Translator_SaaS.Services;
 
 namespace AI_Voice_Translator_SaaS.Jobs
 {

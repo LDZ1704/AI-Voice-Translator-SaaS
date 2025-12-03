@@ -1,4 +1,5 @@
-﻿using Mscc.GenerativeAI;
+﻿using AI_Voice_Translator_SaaS.Interfaces;
+using Mscc.GenerativeAI;
 
 namespace AI_Voice_Translator_SaaS.Services
 {
@@ -7,9 +8,9 @@ namespace AI_Voice_Translator_SaaS.Services
         private readonly string _apiKey;
         private readonly ILogger<GeminiTranslationService> _logger;
 
-        public GeminiTranslationService(IConfiguration configuration, ILogger<GeminiTranslationService> logger)
+        public GeminiTranslationService(IConfiguration configuration, IHttpClientFactory httpClientFactory, ILogger<GeminiTranslationService> logger)
         {
-            _apiKey = configuration["Gemini:ApiKey"];
+            _apiKey = configuration["Gemini:Credentials:ApiKey"];
             _logger = logger;
         }
 
@@ -40,7 +41,7 @@ namespace AI_Voice_Translator_SaaS.Services
 
                                 Translation:";
 
-                var model = new GenerativeModel(_apiKey);
+                var model = new GenerativeModel { ApiKey = _apiKey };
 
                 var response = await model.GenerateContent(prompt);
 

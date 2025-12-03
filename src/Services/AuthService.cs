@@ -1,4 +1,5 @@
 ﻿using AI_Voice_Translator_SaaS.Data;
+using AI_Voice_Translator_SaaS.Interfaces;
 using AI_Voice_Translator_SaaS.Models;
 using AI_Voice_Translator_SaaS.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;

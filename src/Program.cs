@@ -4,8 +4,6 @@ using AI_Voice_Translator_SaaS.Jobs;
 using AI_Voice_Translator_SaaS.Repositories;
 using AI_Voice_Translator_SaaS.Services;
 using AIVoiceTranslator.Data;
-using Amazon.Runtime;
-using Amazon.S3;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,35 +40,25 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Register Services
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ISpeechService, GoogleSpeechService>();
 builder.Services.AddScoped<ITranslationService, GeminiTranslationService>();
-builder.Services.AddScoped<ITTSService, GoogleTTSService>();
+builder.Services.AddScoped<ISpeechService, AzureSpeechService>();
+builder.Services.AddScoped<ITTSService, AzureTTSService>();
 
 // Register Jobs
 builder.Services.AddScoped<ProcessAudioJob>();
 
-// Register Storage Service (Local or AWS)
+// Register Storage Service (Local or Azure)
 var storageType = builder.Configuration["StorageType"];
-if (storageType == "AWS")
+if (storageType == "Azure")
 {
-    // AWS S3 Configuration
-    var awsOptions = builder.Configuration.GetSection("AWS");
-    var credentials = new BasicAWSCredentials(
-        awsOptions["AccessKey"],
-        awsOptions["SecretKey"]
-    );
-
-    builder.Services.AddSingleton<IAmazonS3>(sp =>
-        new AmazonS3Client(credentials, Amazon.RegionEndpoint.GetBySystemName(awsOptions["Region"]))
-    );
-
-    builder.Services.AddScoped<IStorageService, AwsS3StorageService>();
+    builder.Services.AddScoped<IStorageService, AzureBlobStorageService>();
 }
 else
 {
-    // Local Storage (Default)
     builder.Services.AddScoped<IStorageService, LocalStorageService>();
 }
+
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

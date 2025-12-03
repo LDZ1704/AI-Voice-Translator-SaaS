@@ -1,7 +1,7 @@
 ﻿using AI_Voice_Translator_SaaS.Models;
 using AI_Voice_Translator_SaaS.Models.ViewModels;
 
-namespace AI_Voice_Translator_SaaS.Services
+namespace AI_Voice_Translator_SaaS.Interfaces
 {
     public interface IAuthService
     {

@@ -4,7 +4,6 @@ using AI_Voice_Translator_SaaS.Jobs;
 using AI_Voice_Translator_SaaS.Models;
 using AI_Voice_Translator_SaaS.Models.ViewModels;
 using AI_Voice_Translator_SaaS.Repositories;
-using AI_Voice_Translator_SaaS.Services;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 

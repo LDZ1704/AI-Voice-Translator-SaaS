@@ -1,5 +1,5 @@
-﻿using AI_Voice_Translator_SaaS.Models.ViewModels;
-using AI_Voice_Translator_SaaS.Services;
+﻿using AI_Voice_Translator_SaaS.Interfaces;
+using AI_Voice_Translator_SaaS.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AI_Voice_Translator_SaaS.Controllers

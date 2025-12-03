@@ -1,4 +1,6 @@
-﻿namespace AI_Voice_Translator_SaaS.Services
+﻿using AI_Voice_Translator_SaaS.Interfaces;
+
+namespace AI_Voice_Translator_SaaS.Services
 {
     public class LocalStorageService : IStorageService
     {
