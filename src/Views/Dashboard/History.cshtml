@@ -38,16 +38,9 @@
                                                 <i class="bi bi-file-earmark-music text-primary me-2"></i>
                                                 <strong>@file.FileName</strong>
                                             </td>
-                                            <td>@file.FileSizeMB MB</td>
+                                            <td>@file.FormattedSize</td>
                                             <td>
-                                                @if (file.DurationSeconds.HasValue)
-                                                {
-                                                    <span>@(file.DurationSeconds / 60)m @(file.DurationSeconds % 60)s</span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="text-muted">-</span>
-                                                }
+                                                <span>@file.FormattedDuration</span>
                                             </td>
                                             <td>
                                                 @if (file.Status == "Completed")
@@ -75,7 +68,13 @@
                                                     </span>
                                                 }
                                             </td>
-                                            <td>@file.UploadedAtFormatted</td>
+                                            @{
+                                                var uploadedUtc = file.UploadedAt.Kind == DateTimeKind.Unspecified
+                                                    ? DateTime.SpecifyKind(file.UploadedAt, DateTimeKind.Utc)
+                                                    : file.UploadedAt.ToUniversalTime();
+                                                var uploadedLocal = uploadedUtc.AddHours(7);
+                                            }
+                                            <td>@uploadedLocal.ToString("dd/MM/yyyy HH:mm") (UTC+7)</td>
                                             <td>
                                                 <div class="btn-group" role="group">
                                                     <a asp-action="Details" asp-route-id="@file.Id" class="btn btn-sm btn-outline-primary">

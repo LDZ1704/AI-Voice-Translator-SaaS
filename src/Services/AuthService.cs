@@ -11,11 +11,13 @@ namespace AI_Voice_Translator_SaaS.Services
     {
         private readonly AivoiceTranslatorContext _context;
         private readonly PasswordHasher<User> _passwordHasher;
+        private readonly IAuditService _auditService;
 
-        public AuthService(AivoiceTranslatorContext context)
+        public AuthService(AivoiceTranslatorContext context, IAuditService auditService)
         {
             _context = context;
             _passwordHasher = new PasswordHasher<User>();
+            _auditService = auditService;
         }
 
         public async Task<(bool Success, string Message, User User)> RegisterAsync(RegisterViewModel model)
@@ -40,8 +42,7 @@ namespace AI_Voice_Translator_SaaS.Services
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-
-            await LogAuditAsync(user.Id, "Register");
+            await _auditService.LogAsync(user.Id, "Register");
 
             return (true, "Đăng ký thành công", user);
         }
@@ -69,8 +70,7 @@ namespace AI_Voice_Translator_SaaS.Services
 
             user.LastLoginAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
-
-            await LogAuditAsync(user.Id, "Login");
+            await _auditService.LogAsync(user.Id, "Login");
 
             return (true, "Đăng nhập thành công", user);
         }
@@ -84,18 +84,6 @@ namespace AI_Voice_Translator_SaaS.Services
         {
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
             return result != PasswordVerificationResult.Failed;
-        }
-
-        private async Task LogAuditAsync(Guid userId, string action)
-        {
-            var log = new AuditLog
-            {
-                UserId = userId,
-                Action = action,
-                Timestamp = DateTime.UtcNow
-            };
-            _context.AuditLogs.Add(log);
-            await _context.SaveChangesAsync();
         }
     }
 }

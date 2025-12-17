@@ -1,0 +1,314 @@
+﻿@model AI_Voice_Translator_SaaS.Models.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-shield-alt me-2 text-primary"></i>Admin Dashboard
+        </h2>
+        <div>
+            <span class="badge bg-success">Admin Mode</span>
+        </div>
+    </div>
+
+    <!-- Statistics Grid -->
+    <div class="row g-3 mb-4">
+        <!-- Total Users -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm hover-lift">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small text-uppercase">Tổng Users</p>
+                            <h3 class="mb-0 fw-bold">@Model.Statistics.TotalUsers</h3>
+                            <small class="text-success">
+                                <i class="fas fa-check-circle"></i>
+                                @Model.Statistics.ActiveUsers hoạt động
+                            </small>
+                        </div>
+                        <div class="stat-icon bg-primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Uploads -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm hover-lift">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small text-uppercase">Tổng Uploads</p>
+                            <h3 class="mb-0 fw-bold">@Model.Statistics.TotalUploads</h3>
+                            <small class="text-success">
+                                <i class="fas fa-check"></i>
+                                @Model.Statistics.CompletedUploads hoàn thành
+                            </small>
+                        </div>
+                        <div class="stat-icon bg-success">
+                            <i class="fas fa-file-audio"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Storage Used -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm hover-lift">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small text-uppercase">Storage Used</p>
+                            <h3 class="mb-0 fw-bold">@Model.Statistics.TotalStorageUsedMB.ToString("0.##") MB</h3>
+                            <small class="text-info">
+                                <i class="fas fa-hdd"></i>
+                                Azure Blob
+                            </small>
+                        </div>
+                        <div class="stat-icon bg-info">
+                            <i class="fas fa-database"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Processing Time -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm hover-lift">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted mb-1 small text-uppercase">Processing Time</p>
+                            <h3 class="mb-0 fw-bold">@Model.Statistics.TotalProcessingMinutes min</h3>
+                            <small class="text-warning">
+                                <i class="fas fa-clock"></i>
+                                Total
+                            </small>
+                        </div>
+                        <div class="stat-icon bg-warning">
+                            <i class="fas fa-stopwatch"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-language text-primary mb-2" style="font-size: 2.5rem;"></i>
+                    <h4 class="mb-1">@Model.Statistics.TotalTranslations</h4>
+                    <p class="text-muted mb-0">Tổng Translations</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-star text-warning mb-2" style="font-size: 2.5rem;"></i>
+                    <h4 class="mb-1">@Model.Statistics.AverageRating.ToString("0.0") / 5.0</h4>
+                    <p class="text-muted mb-0">Đánh giá trung bình</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-exclamation-triangle text-danger mb-2" style="font-size: 2.5rem;"></i>
+                    <h4 class="mb-1">@Model.Statistics.FailedUploads</h4>
+                    <p class="text-muted mb-0">Failed Uploads</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="/Admin/Users" class="btn btn-primary">
+                            <i class="fas fa-users me-2"></i>Manage Users
+                        </a>
+                        <a href="/Admin/Uploads" class="btn btn-success">
+                            <i class="fas fa-file-audio me-2"></i>View Uploads
+                        </a>
+                        <a href="/Admin/Logs" class="btn btn-info">
+                            <i class="fas fa-clipboard-list me-2"></i>View Logs
+                        </a>
+                        <button class="btn btn-warning" onclick="clearCache()">
+                            <i class="fas fa-trash me-2"></i>Clear Cache
+                        </button>
+                        <button class="btn btn-danger" onclick="exportData()">
+                            <i class="fas fa-download me-2"></i>Export Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row g-3">
+        <!-- Recent Uploads -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Recent Uploads
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>File</th>
+                                    <th>Status</th>
+                                    <th>Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var upload in Model.RecentUploads)
+                                {
+                                    <tr>
+                                        <td>
+                                            <i class="fas fa-file-audio text-primary me-2"></i>
+                                            <small>@upload.FileName</small>
+                                        </td>
+                                        <td>
+                                            @if (upload.Status == "Completed")
+                                            {
+                                                <span class="badge bg-success">Completed</span>
+                                            }
+                                            else if (upload.Status == "Processing")
+                                            {
+                                                <span class="badge bg-warning">Processing</span>
+                                            }
+                                            else if (upload.Status == "Failed")
+                                            {
+                                                <span class="badge bg-danger">Failed</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">@upload.Status</span>
+                                            }
+                                        </td>
+                                        @{
+                                            var uploadedUtc = upload.UploadedAt.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(upload.UploadedAt, DateTimeKind.Utc) : upload.UploadedAt.ToUniversalTime();
+                                            var uploadedLocal = uploadedUtc.AddHours(7);
+                                        }
+                                        <td><small>@uploadedLocal.ToString("dd/MM/yyyy HH:mm") (UTC+7)</small></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <a href="/Admin/Uploads" class="text-primary">View All Uploads →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Users -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>Recent Users
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>User</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model.RecentUsers)
+                                {
+                                    <tr>
+                                        <td>
+                                            <i class="fas fa-user text-primary me-2"></i>
+                                            <small>@user.DisplayName</small>
+                                        </td>
+                                        <td>
+                                            @if (user.IsActive)
+                                            {
+                                                <span class="badge bg-success">Active</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            }
+                                        </td>
+                                        <td><small>@user.CreatedAt.ToString("dd/MM/yy")</small></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white text-center">
+                    <a href="/Admin/Users" class="text-primary">View All Users →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function clearCache() {
+            if (confirm('Clear all cache data?')) {
+                toastr.info('Cache clearing feature coming soon!');
+            }
+        }
+
+        function exportData() {
+            if (confirm('Export all system data to CSV?')) {
+                toastr.info('Export feature coming soon!');
+            }
+        }
+
+        setInterval(function() {
+            $.ajax({
+                url: window.location.href,
+                type: 'GET',
+                global: false,
+                success: function(html) {
+                    var $newHtml = $(html);
+                    var newStats = $newHtml.find('.stat-card h3').map(function() {
+                        return $(this).text().trim();
+                    }).get();
+                    
+                    var currentStats = $('.stat-card h3').map(function() {
+                        return $(this).text().trim();
+                    }).get();
+                    
+                    if (JSON.stringify(newStats) !== JSON.stringify(currentStats)) {
+                        location.reload();
+                    }
+                }
+            });
+        }, 10000);
+    </script>
+}

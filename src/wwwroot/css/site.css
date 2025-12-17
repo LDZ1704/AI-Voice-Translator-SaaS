@@ -104,6 +104,11 @@ body {
     border-radius: 12px;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.card-body {
+    padding: 1.5rem;
 }
 
 .card-header {
@@ -116,6 +121,15 @@ body {
 .form-control:focus {
     border-color: var(--blue-primary);
     box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+.form-control, .form-select {
+    margin-bottom: 0.75rem;
+    padding: 0.625rem 0.875rem;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
 }
 
 .form-label {
@@ -191,6 +205,14 @@ body {
     .btn-primary {
         padding: 0.5rem 1.5rem;
     }
+
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+
+    .table-responsive {
+        font-size: 0.875rem;
+    }
 }
 
 .hero-section {
@@ -209,4 +231,167 @@ body {
 
 .step-number {
     font-family: var(--font-primary);
+}
+
+/* Details Page Styles */
+.transcript-box {
+    border: 2px solid var(--blue-100);
+    min-height: 150px;
+    max-height: 400px;
+    overflow-y: auto;
+    font-size: 1.05rem;
+}
+
+.audio-player-container {
+    border: 2px solid var(--blue-100);
+}
+
+audio::-webkit-media-controls-panel {
+    background-color: var(--blue-light);
+}
+
+.rating-section .btn-outline-warning:hover {
+    background-color: var(--gradient-yellow-orange);
+    color: white;
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.spinner-border {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Statistics Cards */
+.stat-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-bottom: 1rem;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1) !important;
+}
+
+.stat-card .card-body {
+    padding: 1.25rem;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.5rem;
+}
+
+/* Table Improvements */
+.table thead th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    padding: 1rem 0.75rem;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f5f9;
+}
+
+.table tbody td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+}
+
+/* Badges */
+.badge {
+    padding: 0.5rem 0.75rem;
+    font-weight: 500;
+    border-radius: 6px;
+}
+
+/* Loading Spinner */
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+/* Global Loading Spinner Content */
+.spinner-overlay .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Toastr Customization */
+.toast {
+    border-radius: 8px !important;
+}
+
+/* Improved spacing for containers */
+.container-fluid {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.row {
+    margin-left: -0.75rem;
+    margin-right: -0.75rem;
+}
+
+.row > * {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+}
+
+/* Button spacing */
+.btn {
+    margin: 0.25rem;
+}
+
+.btn-group .btn {
+    margin: 0;
+}
+
+/* Card spacing improvements */
+.card-header {
+    padding: 1rem 1.5rem;
+}
+
+.card-footer {
+    padding: 1rem 1.5rem;
+}
+
+/* Alert spacing */
+.alert {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.25rem;
+}
+
+/* Badge spacing */
+.badge {
+    margin: 0 0.25rem;
 }

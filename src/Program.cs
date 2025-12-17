@@ -3,14 +3,38 @@ using AI_Voice_Translator_SaaS.Interfaces;
 using AI_Voice_Translator_SaaS.Jobs;
 using AI_Voice_Translator_SaaS.Repositories;
 using AI_Voice_Translator_SaaS.Services;
+using AI_Voice_Translator_SaaS.Middleware;
 using AIVoiceTranslator.Data;
 using Hangfire;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using System.IO.Compression;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add Response Compression
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.Providers.Add<BrotliCompressionProvider>();
+    options.Providers.Add<GzipCompressionProvider>();
+});
+
+builder.Services.Configure<BrotliCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Fastest;
+});
+
+builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+{
+    options.Level = CompressionLevel.Optimal;
+});
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Add HttpContextAccessor for accessing HttpContext in services
+builder.Services.AddHttpContextAccessor();
 
 // Add DbContext
 builder.Services.AddDbContext<AivoiceTranslatorContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -24,6 +48,7 @@ builder.Services.AddHangfire(config => config
 
 builder.Services.AddHangfireServer();
 
+builder.Services.AddHealthChecks().AddDbContextCheck<AivoiceTranslatorContext>().AddRedis(builder.Configuration.GetConnectionString("Redis"));
 // Add Session
 builder.Services.AddSession(options =>
     {
@@ -40,9 +65,12 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Register Services
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ITranslationService, GeminiTranslationService>();
+builder.Services.AddScoped<IAuditService, AuditService>();
+builder.Services.AddScoped<IAudioDurationService, AudioDurationService>();
+builder.Services.AddScoped<ITranslationService, AzureTranslationService>();
 builder.Services.AddScoped<ISpeechService, AzureSpeechService>();
 builder.Services.AddScoped<ITTSService, AzureTTSService>();
+builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
 // Register Jobs
 builder.Services.AddScoped<ProcessAudioJob>();
@@ -59,6 +87,15 @@ else
 }
 
 builder.Services.AddHttpClient();
+
+// Add Redis Caching
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+    options.InstanceName = "AIVoiceTranslator_";
+});
+
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
@@ -86,7 +123,17 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 
-app.UseStaticFiles();
+app.UseResponseCompression();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        // Cache static files for 7 days
+        ctx.Context.Response.Headers.Append(
+            "Cache-Control", "public,max-age=604800");
+    }
+});
 
 app.UseRouting();
 
@@ -98,6 +145,10 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
     Authorization = new[] { new HangfireAuthorizationFilter() }
 });
+
+app.UseMiddleware<PerformanceMiddleware>();
+
+app.MapHealthChecks("/health");
 
 app.MapControllerRoute(
     name: "default",

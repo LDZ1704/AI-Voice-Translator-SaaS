@@ -1,6 +1,7 @@
 ﻿using AI_Voice_Translator_SaaS.Interfaces;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
+using System.Text;
 
 namespace AI_Voice_Translator_SaaS.Services
 {
@@ -42,12 +43,29 @@ namespace AI_Voice_Translator_SaaS.Services
                 using (var audioConfig = AudioConfig.FromWavFileInput(tempPath))
                 using (var recognizer = new SpeechRecognizer(config, autoDetectConfig, audioConfig))
                 {
-                    var result = await recognizer.RecognizeOnceAsync();
+                    var sb = new StringBuilder();
+                    var tcs = new TaskCompletionSource<bool>();
 
-                    if (result.Reason == ResultReason.RecognizedSpeech)
+                    recognizer.Recognized += (s, e) =>
                     {
-                        var detectedLanguage = AutoDetectSourceLanguageResult.FromResult(result)?.Language ?? "vi-VN";
-                        return (true, result.Text, detectedLanguage, 90m);
+                        if (e.Result.Reason == ResultReason.RecognizedSpeech && !string.IsNullOrWhiteSpace(e.Result.Text))
+                        {
+                            sb.AppendLine(e.Result.Text);
+                        }
+                    };
+
+                    recognizer.Canceled += (s, e) => { tcs.TrySetResult(true); };
+                    recognizer.SessionStopped += (s, e) => { tcs.TrySetResult(true); };
+
+                    await recognizer.StartContinuousRecognitionAsync();
+                    await tcs.Task;
+                    await recognizer.StopContinuousRecognitionAsync();
+
+                    var text = sb.ToString().Trim();
+                    if (!string.IsNullOrEmpty(text))
+                    {
+                        var detectedLanguage = "vi-VN";
+                        return (true, text, detectedLanguage, 90m);
                     }
 
                     return (false, "No speech recognized", "", 0);

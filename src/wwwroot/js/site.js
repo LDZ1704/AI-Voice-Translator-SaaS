@@ -71,6 +71,9 @@ class AudioUploader {
         $('#audioFile').val('');
         $('#filePreview').addClass('d-none');
         $('#dropZone').removeClass('d-none');
+        $('#progressContainer').addClass('d-none');
+        $('#progressBar').css('width', '0%');
+        $('#progressText').text('');
     }
 
     upload() {
@@ -83,6 +86,7 @@ class AudioUploader {
 
         $('#progressContainer').removeClass('d-none');
         $('#uploadBtn').prop('disabled', true);
+        $('#globalLoading').fadeIn(150);
 
         // Real AJAX upload
         $.ajax({
@@ -108,12 +112,22 @@ class AudioUploader {
                     setTimeout(() => {
                         window.location.href = '/Audio/Processing/' + response.audioFileId;
                     }, 1500);
+                } else {
+                    alert(response.message || 'Không thể xử lý file. Vui lòng thử lại.');
+                    $('#uploadBtn').prop('disabled', false);
+                    $('#progressContainer').addClass('d-none');
+                    $('#progressBar').css('width', '0%');
+                    $('#progressText').text('');
                 }
+                $('#globalLoading').fadeOut(150);
             },
             error: function (xhr, status, error) {
                 alert('Lỗi: ' + (xhr.responseJSON?.message || 'Không thể tải lên file'));
                 $('#uploadBtn').prop('disabled', false);
                 $('#progressContainer').addClass('d-none');
+                $('#progressBar').css('width', '0%');
+                $('#progressText').text('');
+                $('#globalLoading').fadeOut(150);
             }
         });
     }
@@ -137,6 +151,29 @@ class FormValidator {
 // Initialize on document ready
 $(document).ready(function () {
     $('.alert').delay(5000).fadeOut('slow');
+
+    let isUserAction = false;
+    
+    $(document).on('click', 'button, a, input[type="submit"]', function() {
+        if (!$(this).hasClass('no-loading')) {
+            isUserAction = true;
+        }
+    });
+    
+    $(document).on('submit', 'form', function() {
+        isUserAction = true;
+    });
+    
+    $(document).ajaxStart(function () {
+        if (isUserAction) {
+            $('#globalLoading').fadeIn(150);
+        }
+    });
+
+    $(document).ajaxStop(function () {
+        $('#globalLoading').fadeOut(150);
+        isUserAction = false;
+    });
 
     if ($('#dropZone').length) {
         new AudioUploader();
