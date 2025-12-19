@@ -150,7 +150,7 @@ class FormValidator {
 
 // Initialize on document ready
 $(document).ready(function () {
-    $('.alert').delay(5000).fadeOut('slow');
+    $('.alert-dismissible').delay(5000).fadeOut('slow');
 
     let isUserAction = false;
     
@@ -269,7 +269,7 @@ $(document).ready(function () {
 
     $('#toggleConfirmPassword').on('click', function () {
         const confirmPasswordInput = $('#confirmPassword');
-        const icon = $('#toggleConfirmIcon');
+        const icon = $('#toggleConfirmPasswordIcon');
 
         if (confirmPasswordInput.attr('type') === 'password') {
             confirmPasswordInput.attr('type', 'text');

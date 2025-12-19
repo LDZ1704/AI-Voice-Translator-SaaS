@@ -75,6 +75,7 @@ namespace AI_Voice_Translator_SaaS.Controllers
                     DisplayName = u.DisplayName,
                     Role = u.Role,
                     SubscriptionTier = u.SubscriptionTier,
+                    SubscriptionExpiryDate = u.SubscriptionExpiryDate,
                     IsActive = u.IsActive,
                     CreatedAt = u.CreatedAt,
                     LastLoginAt = u.LastLoginAt
@@ -430,6 +431,7 @@ namespace AI_Voice_Translator_SaaS.Controllers
                     DisplayName = u.DisplayName,
                     Role = u.Role,
                     SubscriptionTier = u.SubscriptionTier,
+                    SubscriptionExpiryDate = u.SubscriptionExpiryDate,
                     IsActive = u.IsActive,
                     CreatedAt = u.CreatedAt,
                     LastLoginAt = u.LastLoginAt

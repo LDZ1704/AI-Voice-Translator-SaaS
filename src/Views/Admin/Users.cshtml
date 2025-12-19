@@ -14,24 +14,28 @@
         </a>
     </div>
 
-    <!-- Search & Filters -->
     <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
+        <div class="card-body p-4">
             <form method="get" class="row g-3">
-                <div class="col-md-8">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white">
-                            <i class="fas fa-search"></i>
+                <div class="col-lg-8 col-md-6 d-flex flex-column">
+                    <label class="form-label fw-semibold small text-muted mb-2" style="height: 20px; line-height: 20px;">Search</label>
+                    <div class="input-group flex-grow-0" style="height: 38px;">
+                        <span class="input-group-text bg-light border-end-0 d-flex align-items-center" style="height: 38px;">
+                            <i class="fas fa-search text-muted"></i>
                         </span>
-                        <input type="text" name="search" class="form-control"
-                               placeholder="Tìm kiếm theo email hoặc tên..."
-                               value="@Model.SearchQuery">
+                        <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Search by email or name..." value="@Model.SearchQuery" style="height: 38px;">
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-search me-2"></i>Search
-                    </button>
+                <div class="col-lg-4 col-md-6 d-flex flex-column">
+                    <label class="form-label fw-semibold small text-muted mb-2" style="height: 20px; line-height: 20px;">&nbsp;</label>
+                    <div class="d-flex gap-2 flex-grow-0">
+                        <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center" style="height: 38px;">
+                            <i class="fas fa-search me-2"></i>Search
+                        </button>
+                        <a href="/Admin/Users" class="btn btn-outline-secondary d-flex align-items-center justify-content-center" style="height: 38px;">
+                            <i class="fas fa-redo me-2"></i>Reset
+                        </a>
+                    </div>
                 </div>
             </form>
         </div>
@@ -55,10 +59,10 @@
                     <thead class="table-light">
                         <tr>
                             <th width="5%">#</th>
-                            <th width="25%">Email</th>
-                            <th width="20%">Display Name</th>
-                            <th width="10%">Role</th>
-                            <th width="10%">Subscription</th>
+                            <th width="20%">Email</th>
+                            <th width="15%">Display Name</th>
+                            <th width="8%">Role</th>
+                            <th width="12%">Subscription</th>
                             <th width="10%">Status</th>
                             <th width="10%">Joined</th>
                             <th width="10%" class="text-center">Actions</th>
@@ -110,9 +114,26 @@
                                     {
                                         <span class="badge bg-success">Premium</span>
                                     }
+                                    else if (user.SubscriptionTier == "Standard")
+                                    {
+                                        <span class="badge bg-info">Standard</span>
+                                    }
+                                    else if (user.SubscriptionTier == "Basic")
+                                    {
+                                        <span class="badge bg-primary">Basic</span>
+                                    }
                                     else
                                     {
-                                        <span class="badge bg-light text-dark">Free</span>
+                                        <span class="badge bg-light text-dark">Trial</span>
+                                    }
+                                    @if (user.SubscriptionExpiryDate.HasValue && !user.SubscriptionTier.Equals("Trial", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        var expiryUtc = user.SubscriptionExpiryDate.Value.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(user.SubscriptionExpiryDate.Value, DateTimeKind.Utc) : user.SubscriptionExpiryDate.Value.ToUniversalTime();
+                                        var expiryLocal = expiryUtc.AddHours(7);
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar-alt me-1"></i>@expiryLocal.ToString("dd/MM/yyyy")
+                                        </small>
                                     }
                                 </td>
                                 <td>

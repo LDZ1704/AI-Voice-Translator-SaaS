@@ -33,9 +33,9 @@
                             <label asp-for="Password" class="form-label">Mật khẩu</label>
                             <div class="input-group">
                                 <input asp-for="Password" type="password" class="form-control" id="password" placeholder="••••••••" />
-                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <span class="input-group-text bg-white" id="togglePassword" style="cursor: pointer;">
                                     <i class="bi bi-eye" id="togglePasswordIcon"></i>
-                                </button>
+                                </span>
                             </div>
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
@@ -44,9 +44,9 @@
                             <label asp-for="ConfirmPassword" class="form-label">Xác nhận mật khẩu</label>
                             <div class="input-group">
                                 <input asp-for="ConfirmPassword" type="password" class="form-control" id="confirmPassword" placeholder="••••••••" />
-                                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
-                                    <i class="bi bi-eye" id="toggleConfirmIcon"></i>
-                                </button>
+                                <span class="input-group-text bg-white" id="toggleConfirmPassword" style="cursor: pointer;">
+                                    <i class="bi bi-eye" id="toggleConfirmPasswordIcon"></i>
+                                </span>
                             </div>
                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                         </div>

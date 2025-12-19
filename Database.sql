@@ -1,7 +1,7 @@
-CREATE DATABASE AIVoiceTranslator
+CREATE DATABASE AIVoiceTranslatorDB
 GO
 
-USE AIVoiceTranslator
+USE AIVoiceTranslatorDB
 GO
 
 CREATE TABLE Users (
@@ -10,7 +10,8 @@ CREATE TABLE Users (
     PasswordHash NVARCHAR(MAX) NULL,
     DisplayName NVARCHAR(100) NOT NULL,
     Role NVARCHAR(20) NOT NULL DEFAULT 'User', -- User, Admin
-    SubscriptionTier NVARCHAR(20) NOT NULL DEFAULT 'Free', --Free, Premium
+    SubscriptionTier NVARCHAR(20) NOT NULL DEFAULT 'Trial', --Trial, Basic, Premium, Expert
+    SubscriptionExpiryDate DATETIME2 NULL,
     CreatedAt DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
     LastLoginAt DATETIME2 NULL,
     IsActive BIT NOT NULL DEFAULT 1
@@ -157,10 +158,10 @@ END
 GO
 
 USE master
-DROP DATABASE AIVoiceTranslator
+DROP DATABASE AIVoiceTranslatorDB
 GO
 
-USE AIVoiceTranslator
+USE AIVoiceTranslatorDB
 GO
 SELECT * FROM Users
 SELECT * FROM AudioFiles
@@ -168,7 +169,7 @@ SELECT * FROM Transcripts
 SELECT * FROM Translations
 GO
 
-USE AIVoiceTranslator
+USE AIVoiceTranslatorDB
 GO
 DELETE FROM AuditLogs
 DELETE FROM Outputs

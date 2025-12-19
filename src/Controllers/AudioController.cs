@@ -16,26 +16,45 @@ namespace AI_Voice_Translator_SaaS.Controllers
         private readonly ILogger<AudioController> _logger;
         private readonly IAuditService _auditService;
         private readonly IAudioDurationService _durationService;
+        private readonly ISubscriptionService _subscriptionService;
 
-        public AudioController(IStorageService storageService, IUnitOfWork unitOfWork, ILogger<AudioController> logger, IAuditService auditService, IAudioDurationService durationService)
+        public AudioController(
+            IStorageService storageService,
+            IUnitOfWork unitOfWork,
+            ILogger<AudioController> logger,
+            IAuditService auditService,
+            IAudioDurationService durationService,
+            ISubscriptionService subscriptionService)
         {
             _storageService = storageService;
             _unitOfWork = unitOfWork;
             _logger = logger;
             _auditService = auditService;
             _durationService = durationService;
+            _subscriptionService = subscriptionService;
         }
 
         //GET: /Audio/Upload
         [HttpGet]
-        public IActionResult Upload()
+        public async Task<IActionResult> Upload()
         {
-            var userId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdStr))
             {
                 TempData["ErrorMessage"] = "Vui lòng đăng nhập để tải file";
                 return RedirectToAction("Login", "Account");
             }
+
+            var userId = Guid.Parse(userIdStr);
+            var plan = await _subscriptionService.GetCurrentPlanAsync(userId);
+            var used = await _subscriptionService.GetUsedConversionsAsync(userId);
+            var remaining = plan.ConversionLimit - used;
+
+            ViewBag.PlanName = plan.Name;
+            ViewBag.UsedConversions = used;
+            ViewBag.TotalConversions = plan.ConversionLimit;
+            ViewBag.RemainingConversions = remaining;
+            ViewBag.IsExpired = await _subscriptionService.IsSubscriptionExpiredAsync(userId);
 
             return View();
         }
@@ -58,6 +77,16 @@ namespace AI_Voice_Translator_SaaS.Controllers
                 }
 
                 var userId = Guid.Parse(userIdStr);
+
+                var quotaCheck = await _subscriptionService.EnsureCanUseConversionAsync(userId);
+                if (!quotaCheck.Success)
+                {
+                    return Json(new AudioUploadResponseDto
+                    {
+                        Success = false,
+                        Message = quotaCheck.Message
+                    });
+                }
 
                 var validation = FileValidator.ValidateAudioFile(file);
                 if (!validation.IsValid)

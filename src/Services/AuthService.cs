@@ -33,7 +33,7 @@ namespace AI_Voice_Translator_SaaS.Services
                 Email = model.Email,
                 DisplayName = model.DisplayName,
                 Role = "User",
-                SubscriptionTier = "Free",
+                SubscriptionTier = "Trial",
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
             };

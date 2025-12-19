@@ -19,13 +19,12 @@
         </div>
     </div>
 
-    <!-- Filters -->
     <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
+        <div class="card-body p-4">
             <form method="get" class="row g-3">
-                <div class="col-md-4">
-                    <label class="form-label">Filter by Action</label>
-                    <select name="actionFilter" class="form-select">
+                <div class="col-lg-5 col-md-6 d-flex flex-column">
+                    <label class="form-label fw-semibold small text-muted mb-2" style="height: 20px; line-height: 20px;">Action</label>
+                    <select name="actionFilter" class="form-select flex-grow-0" style="height: 38px;">
                         <option value="All" selected="@(Model.ActionFilter == "All")">All Actions</option>
                         <option value="Login" selected="@(Model.ActionFilter == "Login")">Login</option>
                         <option value="Register" selected="@(Model.ActionFilter == "Register")">Register</option>
@@ -34,17 +33,16 @@
                         <option value="Delete" selected="@(Model.ActionFilter == "Delete")">Delete</option>
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label">&nbsp;</label>
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="fas fa-filter me-2"></i>Apply Filter
-                    </button>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">&nbsp;</label>
-                    <a href="/Admin/Logs" class="btn btn-secondary w-100">
-                        <i class="fas fa-redo me-2"></i>Reset
-                    </a>
+                <div class="col-lg-7 col-md-6 d-flex flex-column">
+                    <label class="form-label fw-semibold small text-muted mb-2" style="height: 20px; line-height: 20px;">&nbsp;</label>
+                    <div class="d-flex gap-2 flex-grow-0">
+                        <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center" style="height: 38px;">
+                            <i class="fas fa-filter me-2"></i>Apply Filter
+                        </button>
+                        <a href="/Admin/Logs" class="btn btn-outline-secondary d-flex align-items-center justify-content-center" style="height: 38px;">
+                            <i class="fas fa-redo me-2"></i>Reset
+                        </a>
+                    </div>
                 </div>
             </form>
         </div>
@@ -76,8 +74,8 @@
                             <tr>
                                 <td colspan="6" class="text-center py-4">
                                     <i class="fas fa-inbox text-muted" style="font-size: 2rem;"></i>
-                                    <p class="text-muted mt-2 mb-0">Không có logs nào được tìm thấy.</p>
-                                    <small class="text-muted">Tổng số logs trong database: @Model.TotalLogs</small>
+                                    <p class="text-muted mt-2 mb-0">No logs found.</p>
+                                    <small class="text-muted">Total logs in database: @Model.TotalLogs</small>
                                 </td>
                             </tr>
                         }

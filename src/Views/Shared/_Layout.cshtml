@@ -39,16 +39,40 @@
 
                         @if (isLoggedIn)
                         {
-                            @if (Context.Session.GetString("UserRole") == "Admin")
-                            {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                        <i class="fas fa-shield-alt me-1"></i>Admin
-                                    </a>
-                                    <ul class="dropdown-menu">
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Audio" asp-action="Upload">
+                                    <i class="bi bi-cloud-upload"></i> Tải lên
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Dashboard" asp-action="Index">
+                                    <i class="bi bi-speedometer2"></i> Kho âm thanh
+                                </a>
+                            </li>
+
+                            <!-- Upgrade Link -->
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Billing" asp-action="Index">
+                                    <i class="bi bi-star-fill"></i> Nâng cấp
+                                </a>
+                            </li>
+
+                            <!-- User Dropdown -->
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-person-circle"></i> @userName
+                                    @if (userRole == "Admin")
+                                    {
+                                        <span class="badge bg-warning text-dark ms-1">Admin</span>
+                                    }
+                                    @await Component.InvokeAsync("SubscriptionInfo")
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    @if (userRole == "Admin")
+                                    {
                                         <li>
                                             <a class="dropdown-item" href="/Admin/Dashboard">
-                                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                                <i class="fas fa-tachometer-alt me-2"></i>Admin Dashboard
                                             </a>
                                         </li>
                                         <li>
@@ -66,30 +90,13 @@
                                                 <i class="fas fa-clipboard-list me-2"></i>Logs
                                             </a>
                                         </li>
-                                    </ul>
-                                </li>
-                            }
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-controller="Audio" asp-action="Upload">
-                                    <i class="bi bi-cloud-upload"></i> Tải lên
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-white" asp-controller="Dashboard" asp-action="Index">
-                                    <i class="bi bi-speedometer2"></i> Dashboard
-                                </a>
-                            </li>
-
-                            <!-- User Dropdown -->
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-person-circle"></i> @userName
-                                    @if (userRole == "Admin")
-                                    {
-                                        <span class="badge bg-warning text-dark ms-1">Admin</span>
+                                        <li><hr class="dropdown-divider"></li>
                                     }
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Billing" asp-action="Index">
+                                            <i class="bi bi-credit-card"></i> Quản lý gói
+                                        </a>
+                                    </li>
                                     <li>
                                         <a class="dropdown-item" asp-controller="Dashboard" asp-action="History">
                                             <i class="bi bi-clock-history"></i> Lịch sử

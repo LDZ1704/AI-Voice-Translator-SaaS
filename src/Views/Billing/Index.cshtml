@@ -1,0 +1,185 @@
+@model AI_Voice_Translator_SaaS.Models.ViewModels.BillingViewModel
+@{
+    ViewData["Title"] = "Gói dịch vụ";
+}
+
+<div class="container py-5">
+    <!-- Header Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold mb-3">Chọn gói dịch vụ phù hợp với bạn</h1>
+        <p class="text-muted lead">Nâng cấp để có thêm lượt chuyển đổi và tính năng cao cấp</p>
+    </div>
+
+    <!-- Current Plan Info Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-primary shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-crown me-2"></i>Gói hiện tại của bạn</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <h4 class="fw-bold mb-2">@Model.CurrentPlanName</h4>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-chart-line me-2"></i>
+                                Đã sử dụng: <strong>@Model.UsedConversions / @Model.CurrentPlanLimit</strong> lượt chuyển đổi
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                            @if (Model.IsExpiringSoon && Model.SubscriptionExpiryDate.HasValue && !Model.CurrentPlanId.Equals("Trial", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <div class="alert alert-warning mb-0">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Gói của bạn sẽ hết hạn sau <strong>@Model.DaysUntilExpiry ngày</strong>. 
+                                    <a asp-action="Index" class="alert-link">Gia hạn ngay</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <p class="text-muted small mb-0">
+                                Còn lại: <strong>@Model.RemainingConversions</strong> lượt chuyển đổi
+                            </p>
+                            @if (Model.CurrentPlanId.Equals("Trial", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <p class="text-muted small mb-0 text-end">
+                                    <i class="fas fa-infinity me-1"></i>Gói dùng thử không giới hạn thời gian
+                                </p>
+                            }
+                            else if (Model.SubscriptionExpiryDate.HasValue)
+                            {
+                                var expiryUtc = Model.SubscriptionExpiryDate.Value.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(Model.SubscriptionExpiryDate.Value, DateTimeKind.Utc) : Model.SubscriptionExpiryDate.Value.ToUniversalTime();
+                                var expiryLocal = expiryUtc.AddHours(7);
+                                <p class="text-muted small mb-0 text-end">
+                                    <i class="fas fa-calendar-alt me-1"></i>Hết hạn: @expiryLocal.ToString("dd/MM/yyyy HH:mm") (UTC+7)
+                                </p>
+                            }
+                        </div>
+
+                        <div class="progress" style="height: 25px;">
+                            @{
+                                var percentage = Model.CurrentPlanLimit > 0 ? (int)((double)Model.UsedConversions / Model.CurrentPlanLimit * 100) : 0;
+                                var progressClass = percentage >= 90 ? "bg-danger" : percentage >= 70 ? "bg-warning" : "bg-success";
+                            }
+                            <div class="progress-bar @progressClass" role="progressbar"
+                                 style="width: @percentage%"
+                                 aria-valuenow="@percentage"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                                @percentage%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plans Grid -->
+    <div class="row g-4 justify-content-center">
+        @foreach (var plan in Model.Plans)
+        {
+            var isCurrent = string.Equals(plan.Id, Model.CurrentPlanId, StringComparison.OrdinalIgnoreCase);
+            var isPopular = plan.Id == "Standard";
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="card h-100 shadow-sm border-0 position-relative @(isCurrent ? "border-success border-2" : "") @(isPopular ? "border-primary border-2" : "")">
+                    @if (isPopular)
+                    {
+                        <div class="position-absolute top-0 start-50 translate-middle">
+                            <span class="badge bg-primary px-3 py-2">Phổ biến nhất</span>
+                        </div>
+                    }
+                    @if (isCurrent)
+                    {
+                        <div class="position-absolute top-0 start-50 translate-middle">
+                            <span class="badge bg-success px-3 py-2"><i class="fas fa-check me-1"></i>Gói hiện tại</span>
+                        </div>
+                    }
+                    
+                    <div class="card-body d-flex flex-column p-4">
+                        <h5 class="card-title fw-bold mb-3">@plan.Name</h5>
+                        
+                        <div class="mb-4">
+                            <h2 class="fw-bold mb-1">
+                                @if (plan.IsTrial)
+                                {
+                                    <span>Miễn phí</span>
+                                }
+                                else
+                                {
+                                    <span>@plan.PriceDisplay</span>
+                                }
+                            </h2>
+                        </div>
+
+                        <ul class="list-unstyled mb-4 flex-grow-1">
+                            <li class="mb-2">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <strong>@plan.ConversionLimit</strong> lượt chuyển đổi
+                            </li>
+                            @if (plan.Id == "Basic")
+                            {
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Hỗ trợ tiêu chuẩn</li>
+                            }
+                            else if (plan.Id == "Standard")
+                            {
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Hỗ trợ ưu tiên</li>
+                            }
+                            else if (plan.Id == "Premium")
+                            {
+                                <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Hỗ trợ 24/7</li>
+                            }
+                            @if (plan.IsTrial)
+                            {
+                                <li class="mb-2"><i class="fas fa-times-circle text-danger me-2"></i>Không hỗ trợ ưu tiên</li>
+                            }
+                        </ul>
+
+                        @if (isCurrent)
+                        {
+                            <button class="btn btn-outline-success mt-auto d-flex align-items-center justify-content-center" style="height: 38px;" disabled>
+                                <i class="fas fa-check me-2"></i>Đang sử dụng
+                            </button>
+                        }
+                        else
+                        {
+                            <a asp-controller="Billing"
+                               asp-action="Checkout"
+                               asp-route-planId="@plan.Id"
+                               class="btn btn-primary mt-auto d-flex align-items-center justify-content-center" style="height: 38px;">
+                                @if (plan.IsTrial)
+                                {
+                                    <span>Bắt đầu miễn phí</span>
+                                }
+                                else
+                                {
+                                    <span>Chọn gói này</span>
+                                }
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Info Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card bg-light border-0">
+                <div class="card-body text-center">
+                    <h6 class="fw-bold mb-3"><i class="fas fa-info-circle me-2"></i>Thông tin về lượt chuyển đổi</h6>
+                    <p class="text-muted mb-0 small">
+                        Mỗi lượt chuyển đổi tương ứng với một quy trình hoàn chỉnh: Nhận dạng giọng nói (Speech-to-Text) → 
+                        Dịch văn bản (Translation) → Tổng hợp giọng nói (Text-to-Speech). 
+                        Gói của bạn sẽ tự động gia hạn mỗi tháng hoặc bạn có thể gia hạn thủ công trước khi hết hạn.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

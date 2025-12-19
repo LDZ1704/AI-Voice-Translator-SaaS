@@ -4,17 +4,23 @@
 }
 
 <div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h2 class="fw-bold mb-2">Dashboard</h2>
+        <p class="text-muted">Quản lý và theo dõi các file audio của bạn</p>
+    </div>
+
     <!-- Statistics Cards -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card stat-card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small">Tổng file</p>
-                            <h3 class="mb-0 fw-bold">@Model.Stats.TotalFiles</h3>
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <p class="text-muted mb-2 small fw-semibold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">Tổng file</p>
+                            <h2 class="mb-0 fw-bold" style="font-size: 2rem;">@Model.Stats.TotalFiles</h2>
                         </div>
-                        <div class="stat-icon bg-primary">
+                        <div class="stat-icon bg-primary d-flex align-items-center justify-content-center">
                             <i class="fas fa-file-audio"></i>
                         </div>
                     </div>
@@ -22,15 +28,15 @@
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card stat-card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small">Hoàn thành</p>
-                            <h3 class="mb-0 fw-bold text-success">@Model.Stats.CompletedFiles</h3>
+        <div class="col-lg-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <p class="text-muted mb-2 small fw-semibold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">Hoàn thành</p>
+                            <h2 class="mb-0 fw-bold text-success" style="font-size: 2rem;">@Model.Stats.CompletedFiles</h2>
                         </div>
-                        <div class="stat-icon bg-success">
+                        <div class="stat-icon bg-success d-flex align-items-center justify-content-center">
                             <i class="fas fa-check-circle"></i>
                         </div>
                     </div>
@@ -38,15 +44,15 @@
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card stat-card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small">Đang xử lý</p>
-                            <h3 class="mb-0 fw-bold text-warning">@Model.Stats.ProcessingFiles</h3>
+        <div class="col-lg-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <p class="text-muted mb-2 small fw-semibold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">Đang xử lý</p>
+                            <h2 class="mb-0 fw-bold text-warning" style="font-size: 2rem;">@Model.Stats.ProcessingFiles</h2>
                         </div>
-                        <div class="stat-icon bg-warning">
+                        <div class="stat-icon bg-warning d-flex align-items-center justify-content-center">
                             <i class="fas fa-spinner"></i>
                         </div>
                     </div>
@@ -54,15 +60,15 @@
             </div>
         </div>
 
-        <div class="col-md-3">
-            <div class="card stat-card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <p class="text-muted mb-1 small">Tổng phút</p>
-                            <h3 class="mb-0 fw-bold text-info">@Model.Stats.TotalMinutes</h3>
+        <div class="col-lg-3 col-md-6">
+            <div class="card stat-card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <p class="text-muted mb-2 small fw-semibold text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">Tổng phút</p>
+                            <h2 class="mb-0 fw-bold text-info" style="font-size: 2rem;">@Model.Stats.TotalMinutes</h2>
                         </div>
-                        <div class="stat-icon bg-info">
+                        <div class="stat-icon bg-info d-flex align-items-center justify-content-center">
                             <i class="fas fa-clock"></i>
                         </div>
                     </div>
@@ -71,28 +77,37 @@
         </div>
     </div>
 
-    <!-- Filters & Search -->
     <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
+        <div class="card-body p-4">
             <form method="get" class="row g-3">
-                <div class="col-md-5">
-                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm file..." value="@Model.SearchQuery">
+                <div class="col-lg-5 col-md-6 d-flex flex-column">
+                    <label class="form-label fw-semibold small text-muted mb-2" style="height: 20px; line-height: 20px;">Tìm kiếm</label>
+                    <div class="input-group flex-grow-0" style="height: 38px;">
+                        <span class="input-group-text bg-light border-end-0 d-flex align-items-center" style="height: 38px;">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Nhập tên file..." value="@Model.SearchQuery" style="height: 38px;">
+                    </div>
                 </div>
-                <div class="col-md-3">
-                    <select name="status" class="form-select">
+                <div class="col-lg-3 col-md-6 d-flex flex-column">
+                    <label class="form-label fw-semibold small text-muted mb-2" style="height: 20px; line-height: 20px;">Trạng thái</label>
+                    <select name="status" class="form-select flex-grow-0" style="height: 38px;">
                         <option value="All" selected="@(Model.StatusFilter == "All")">Tất cả trạng thái</option>
                         <option value="Completed" selected="@(Model.StatusFilter == "Completed")">Hoàn thành</option>
                         <option value="Processing" selected="@(Model.StatusFilter == "Processing")">Đang xử lý</option>
                         <option value="Failed" selected="@(Model.StatusFilter == "Failed")">Lỗi</option>
                     </select>
                 </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search me-2"></i>Tìm kiếm
-                    </button>
-                    <a href="/Dashboard" class="btn btn-secondary">
-                        <i class="fas fa-redo me-2"></i>Reset
-                    </a>
+                <div class="col-lg-4 col-md-6 d-flex flex-column">
+                    <label class="form-label fw-semibold small text-muted mb-2" style="height: 20px; line-height: 20px;">&nbsp;</label>
+                    <div class="d-flex gap-2 flex-grow-0">
+                        <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center" style="height: 38px;">
+                            <i class="fas fa-search me-2"></i>Tìm kiếm
+                        </button>
+                        <a href="/Dashboard" class="btn btn-outline-secondary d-flex align-items-center justify-content-center" style="height: 38px;">
+                            <i class="fas fa-redo me-2"></i>Reset
+                        </a>
+                    </div>
                 </div>
             </form>
         </div>
@@ -100,78 +115,117 @@
 
     <!-- Files Table -->
     <div class="card border-0 shadow-sm">
-        <div class="card-header bg-white py-3">
-            <h5 class="mb-0">
-                <i class="fas fa-list me-2"></i>Danh sách file gần đây
-            </h5>
+        <div class="card-header bg-white border-bottom py-3 px-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-list me-2 text-white"></i>Danh sách file gần đây
+                </h5>
+                @if (Model.AudioFiles.Any())
+                {
+                    <span class="badge bg-light text-dark">@Model.AudioFiles.Count() file</span>
+                }
+            </div>
         </div>
         <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0" id="filesTable">
-                    <thead class="table-light">
-                        <tr>
-                            <th>File</th>
-                            <th>Kích thước</th>
-                            <th>Thời lượng</th>
-                            <th>Trạng thái</th>
-                            <th>Ngày tải lên</th>
-                            <th class="text-center">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var file in Model.AudioFiles)
-                        {
+            @if (Model.AudioFiles.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0" id="filesTable">
+                        <thead class="table-light">
                             <tr>
-                                <td>
-                                    <i class="fas fa-file-audio text-primary me-2"></i>
-                                    <strong>@file.FileName</strong>
-                                </td>
-                                <td>@file.FormattedSize</td>
-                                <td>@file.FormattedDuration</td>
-                                <td>
-                                    @if (file.Status == "Completed")
-                                    {
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check me-1"></i>Hoàn thành
-                                        </span>
-                                    }
-                                    else if (file.Status == "Processing")
-                                    {
-                                        <span class="badge bg-warning">
-                                            <i class="fas fa-spinner fa-spin me-1"></i>Đang xử lý
-                                        </span>
-                                    }
-                                    else if (file.Status == "Failed")
-                                    {
-                                        <span class="badge bg-danger">
-                                            <i class="fas fa-times me-1"></i>Lỗi
-                                        </span>
-                                    }
-                                    else
-                                    {
-                                        <span class="badge bg-secondary">Pending</span>
-                                    }
-                                </td>
-                                @{
-                                    var uploadedUtc = file.UploadedAt.Kind == DateTimeKind.Unspecified
-                                        ? DateTime.SpecifyKind(file.UploadedAt, DateTimeKind.Utc)
-                                        : file.UploadedAt.ToUniversalTime();
-                                    var uploadedLocal = uploadedUtc.AddHours(7);
-                                }
-                                <td>@uploadedLocal.ToString("dd/MM/yyyy HH:mm") (UTC+7)</td>
-                                <td class="text-center">
-                                    <a href="/Dashboard/Details/@file.Id" class="btn btn-sm btn-primary" title="Xem chi tiết">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <button class="btn btn-sm btn-danger" onclick="deleteFile('@file.Id')" title="Xóa">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </td>
+                                <th class="ps-4">File</th>
+                                <th>Kích thước</th>
+                                <th>Thời lượng</th>
+                                <th>Trạng thái</th>
+                                <th>Ngày tải lên</th>
+                                <th class="text-center pe-4">Thao tác</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            @foreach (var file in Model.AudioFiles)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="file-icon-wrapper me-3">
+                                                <i class="fas fa-file-audio text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <strong class="d-block">@file.FileName</strong>
+                                                <small class="text-muted">ID: @file.Id.ToString().Substring(0, 8)...</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">@file.FormattedSize</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">@file.FormattedDuration</span>
+                                    </td>
+                                    <td>
+                                        @if (file.Status == "Completed")
+                                        {
+                                            <span class="badge bg-success px-3 py-2">
+                                                <i class="fas fa-check-circle me-1"></i>Hoàn thành
+                                            </span>
+                                        }
+                                        else if (file.Status == "Processing")
+                                        {
+                                            <span class="badge bg-warning px-3 py-2">
+                                                <i class="fas fa-spinner fa-spin me-1"></i>Đang xử lý
+                                            </span>
+                                        }
+                                        else if (file.Status == "Failed")
+                                        {
+                                            <span class="badge bg-danger px-3 py-2">
+                                                <i class="fas fa-times-circle me-1"></i>Lỗi
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary px-3 py-2">Pending</span>
+                                        }
+                                    </td>
+                                    @{
+                                        var uploadedUtc = file.UploadedAt.Kind == DateTimeKind.Unspecified
+                                            ? DateTime.SpecifyKind(file.UploadedAt, DateTimeKind.Utc)
+                                            : file.UploadedAt.ToUniversalTime();
+                                        var uploadedLocal = uploadedUtc.AddHours(7);
+                                    }
+                                    <td>
+                                        <span class="text-muted">@uploadedLocal.ToString("dd/MM/yyyy")</span>
+                                        <br>
+                                        <small class="text-muted">@uploadedLocal.ToString("HH:mm") (UTC+7)</small>
+                                    </td>
+                                    <td class="text-center pe-4">
+                                        <div class="btn-group" role="group">
+                                            <a href="/Dashboard/Details/@file.Id" class="btn btn-sm btn-outline-primary" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteFile('@file.Id')" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <div class="mb-4">
+                        <i class="fas fa-folder-open text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+                    </div>
+                    <h5 class="text-muted mb-2">Chưa có file nào</h5>
+                    <p class="text-muted mb-4">Bắt đầu bằng cách tải lên file audio đầu tiên của bạn</p>
+                    <a href="/Audio/Upload" class="btn btn-primary">
+                        <i class="fas fa-upload me-2"></i>Tải file lên ngay
+                    </a>
+                </div>
+            }
         </div>
     </div>
 

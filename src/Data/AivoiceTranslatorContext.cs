@@ -42,6 +42,7 @@ public partial class AivoiceTranslatorContext : DbContext
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.Role).HasDefaultValue("User");
             entity.Property(e => e.SubscriptionTier).HasDefaultValue("Free");
+            entity.Property(e => e.SubscriptionExpiryDate).IsRequired(false);
         });
 
         modelBuilder.Entity<AudioFile>(entity =>

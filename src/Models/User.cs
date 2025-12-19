@@ -26,6 +26,8 @@ public partial class User
     [StringLength(20)]
     public string SubscriptionTier { get; set; } = null!;
 
+    public DateTime? SubscriptionExpiryDate { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime? LastLoginAt { get; set; }

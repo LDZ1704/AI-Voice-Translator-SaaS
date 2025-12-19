@@ -70,10 +70,13 @@ builder.Services.AddScoped<IAudioDurationService, AudioDurationService>();
 builder.Services.AddScoped<ITranslationService, AzureTranslationService>();
 builder.Services.AddScoped<ISpeechService, AzureSpeechService>();
 builder.Services.AddScoped<ITTSService, AzureTTSService>();
+builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
+builder.Services.AddScoped<IMoMoPaymentService, MoMoPaymentService>();
 builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
 // Register Jobs
 builder.Services.AddScoped<ProcessAudioJob>();
+builder.Services.AddScoped<SubscriptionExpiryJob>();
 
 // Register Storage Service (Local or Azure)
 var storageType = builder.Configuration["StorageType"];
@@ -153,6 +156,16 @@ app.MapHealthChecks("/health");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+// Schedule recurring job to check expired subscriptions (runs daily at 2 AM UTC)
+using (var scope = app.Services.CreateScope())
+{
+    var subscriptionExpiryJob = scope.ServiceProvider.GetRequiredService<SubscriptionExpiryJob>();
+    Hangfire.RecurringJob.AddOrUpdate(
+        "check-expired-subscriptions",
+        () => subscriptionExpiryJob.CheckAndDowngradeExpiredSubscriptions(),
+        Hangfire.Cron.Daily(2));
+}
 
 app.Run();
 

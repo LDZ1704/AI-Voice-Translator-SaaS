@@ -1,0 +1,21 @@
+@model AI_Voice_Translator_SaaS.ViewComponents.SubscriptionInfoViewModel
+
+@if (Model != null)
+{
+    <span class="badge @(Model.PlanId == "Trial" ? "bg-secondary" : Model.PlanId == "Premium" ? "bg-warning text-dark" : "bg-info") ms-2">
+        @Model.PlanName
+    </span>
+    @if (Model.RemainingConversions <= 5 && Model.RemainingConversions > 0)
+    {
+        <span class="badge bg-warning text-dark ms-1" title="Còn @Model.RemainingConversions lượt chuyển đổi">
+            <i class="fas fa-exclamation-triangle"></i> Còn @Model.RemainingConversions lượt
+        </span>
+    }
+    @if (Model.IsExpired)
+    {
+        <span class="badge bg-danger ms-1">
+            <i class="fas fa-exclamation-circle"></i> Đã hết hạn
+        </span>
+    }
+}
+
