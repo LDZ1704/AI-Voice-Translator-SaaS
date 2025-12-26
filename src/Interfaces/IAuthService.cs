@@ -9,5 +9,6 @@ namespace AI_Voice_Translator_SaaS.Interfaces
         Task<(bool Success, string Message, User User)> LoginAsync(LoginViewModel model);
         Task<User> GetUserByEmailAsync(string email);
         Task<bool> ValidatePasswordAsync(User user, string password);
+        Task<User> GetOrCreateOAuthUserAsync(string provider, string providerKey, string email, string displayName);
     }
 }

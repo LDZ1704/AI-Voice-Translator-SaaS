@@ -8,6 +8,8 @@ CREATE TABLE Users (
     Id UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
     Email NVARCHAR(256) NOT NULL UNIQUE,
     PasswordHash NVARCHAR(MAX) NULL,
+    OAuthProvider NVARCHAR(50) NULL,
+    OAuthProviderKey NVARCHAR(256) NULL,
     DisplayName NVARCHAR(100) NOT NULL,
     Role NVARCHAR(20) NOT NULL DEFAULT 'User', -- User, Admin
     SubscriptionTier NVARCHAR(20) NOT NULL DEFAULT 'Trial', --Trial, Basic, Premium, Expert

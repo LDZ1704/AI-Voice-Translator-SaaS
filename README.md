@@ -1,91 +1,131 @@
 # AI Voice Translator SaaS
 
-Cloud-ready ASP.NET Core MVC app that turns uploaded audio into translated speech using Azure services. Includes accurate duration detection with NAudio, caching, audit logging, and admin dashboards.
+Cloud-ready ASP.NET Core MVC app that converts uploaded audio into translated speech using Azure services.
 
 ## Features
-- Upload audio (MP3/WAV/M4A) and process asynchronously.
-- Speech-to-Text with Azure Speech (continuous recognition for full-length audio).
-- Translation with Azure Translator Text API (chunked for long texts).
-- Text-to-Speech with Azure Speech (TTS) to generate downloadable audio.
-- Accurate duration via NAudio (MediaFoundationReader for M4A on Windows).
-- Redis caching for translation results.
-- Audit logging for Register, Login, Upload, Download, Delete; admin log viewer with stats.
-- Time display adjusted to UTC+7 in views.
-- Responsive UI with improved spacing; auto-refresh every 10s only where needed.
+
+- **Audio Processing**: Upload MP3/WAV/M4A files, process asynchronously
+- **Speech-to-Text**: Azure Speech Service with continuous recognition
+- **Translation**: Azure Translator Text API with chunked processing
+- **Text-to-Speech**: Azure Speech TTS to generate downloadable audio
+- **Duration Detection**: Accurate duration via NAudio
+- **Caching**: Redis caching for translation results
+- **Audit Logging**: Track Register, Login, Upload, Download, Delete
+- **Admin Dashboard**: User management, uploads, logs, statistics
+- **Subscription Management**: Trial, Basic, Standard, Premium plans with MoMo payment
+- **Responsive UI**: Bootstrap 5 with improved spacing and auto-refresh
 
 ## Tech Stack
-- .NET 8, ASP.NET Core MVC, Entity Framework Core (SQL Server)
-- Azure Speech (STT/TTS), Azure Translator, Azure Blob Storage
-- Redis (caching), NAudio (duration)
-- jQuery, Bootstrap, Toastr
+
+- **Backend**: .NET 8, ASP.NET Core MVC, Entity Framework Core (SQL Server)
+- **Azure Services**: Speech (STT/TTS), Translator, Blob Storage, SQL Database
+- **Caching**: Redis
+- **Audio Processing**: NAudio
+- **Payment**: MoMo Payment Gateway
+- **Frontend**: jQuery, Bootstrap 5, Toastr
 
 ## Prerequisites
+
 - .NET 8 SDK
-- SQL Server instance
-- Redis instance (optional but recommended for caching)
-- Azure resources: Speech, Translator, Storage (Blob)
+- SQL Server (Azure SQL Database hoặc local)
+- Redis (optional, recommended for caching)
+- Azure resources: Speech, Translator, Blob Storage
+- MoMo Business account (for payment)
+
+## Quick Start
+
+### 1. Clone và restore
+```bash
+git clone <repository-url>
+cd AI-Voice-Translator-SaaS
+cd src
+dotnet restore
+```
+
+### 2. Cấu hình Azure
+Xem [AZURE_SETUP_GUIDE.md](./AZURE_SETUP_GUIDE.md) để setup Azure services.
+
+### 3. Cấu hình MoMo Payment (optional)
+Xem [MOMO_SETUP_GUIDE.md](./MOMO_SETUP_GUIDE.md) để setup payment gateway.
+
+### 4. Cấu hình appsettings.json
+Cập nhật `src/appsettings.json` với Azure credentials và connection strings.
+
+### 5. Database Migration
+```bash
+cd src
+dotnet ef database update
+```
+
+### 6. Run
+```bash
+dotnet run
+```
+Mở `https://localhost:5001` (hoặc URL hiển thị trong console).
 
 ## Configuration
-Update `src/appsettings.json` (or `appsettings.Development.json`) with your values:
+
+Cập nhật `src/appsettings.json`:
+
 ```json
-"ConnectionStrings": {
-  "DefaultConnection": "Server=.;Database=AI_Translator;Trusted_Connection=True;TrustServerCertificate=True"
-},
-"AzureTranslator": {
-  "Endpoint": "https://<your-translator>.cognitiveservices.azure.com",
-  "Key": "<translator-key>",
-  "Region": "<translator-region>"
-},
-"AzureSpeech": {
-  "Key": "<speech-key>",
-  "Region": "<speech-region>"
-},
-"AzureBlobStorage": {
-  "ConnectionString": "<blob-connection-string>",
-  "ContainerName": "<container>"
-},
-"Redis": {
-  "ConnectionString": "localhost:6379"
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=.;Database=AI_Translator;Trusted_Connection=True;TrustServerCertificate=True",
+    "Redis": "localhost:6379"
+  },
+  "StorageType": "Azure",
+  "Azure": {
+    "SpeechKey": "<speech-key>",
+    "SpeechRegion": "<speech-region>",
+    "BlobConnectionString": "<blob-connection-string>",
+    "AudioContainer": "audio-files",
+    "OutputContainer": "output-files"
+  },
+  "AzureTranslator": {
+    "Endpoint": "https://<translator>.cognitiveservices.azure.com/",
+    "Key": "<translator-key>",
+    "Region": "<translator-region>"
+  },
+  "MoMoPayment": {
+    "MomoApiUrl": "https://test-payment.momo.vn/gw_payment/transactionProcessor",
+    "SecretKey": "<secret-key>",
+    "AccessKey": "<access-key>",
+    "PartnerCode": "MOMO",
+    "RequestType": "captureMoMoWallet"
+  }
 }
 ```
 
-## Run Locally
-```bash
-cd src
-dotnet restore
-dotnet build
-dotnet run
-```
-Then open `https://localhost:5001` (or the URL shown in console).
+## Subscription Plans
 
-## Database
-- EF Core migrations are included under `src/Migrations`.
-- To initialize the database (if needed): `dotnet ef database update` (from `src`).
+- **Trial**: Unlimited time, 5 conversions
+- **Basic**: 150,000₫/month, 500 conversions/month
+- **Standard**: 500,000₫/month, 1000 conversions/month
+- **Premium**: 1,000,000₫/month, 5000 conversions/month
 
-## Key Implementation Notes
-- Translation is chunked in `Jobs/ProcessAudioJob.cs` to avoid timeouts.
-- Duration is computed in `Services/AudioDurationService.cs` using NAudio; M4A uses `MediaFoundationReader` (Windows). Falls back to estimation if parsing fails.
-- UI auto-refresh runs every 10s only when items are processing; loading overlay is suppressed for background polling.
-- Audit logging is centralized via `AuditService`; view logs at `/Admin/Logs`.
+## Key Files
+
+- `Program.cs` - DI registrations
+- `Services/AudioDurationService.cs` - NAudio duration calculation
+- `Jobs/ProcessAudioJob.cs` - Chunked translation pipeline
+- `Services/MoMoPaymentService.cs` - Payment integration
+- `Services/SubscriptionService.cs` - Subscription management
+- `Views/Admin/Logs.cshtml` - Audit log viewer
 
 ## Troubleshooting
-- M4A duration: ensure Windows Media Foundation components are available (on Windows Server, install Desktop Experience/Media Foundation features).
-- Translator 404/401: verify the Translator endpoint includes `/translator/text/v3.0` if using the global endpoint; ensure key/region match your resource.
-- Long audio not fully transcribed: continuous STT is enabled; if issues persist, check Azure Speech quotas and audio quality.
 
-## Paths of Interest
-- `Program.cs` – DI registrations for services (Translator, Speech, Storage, Caching, Audit, Duration).
-- `Services/AudioDurationService.cs` – NAudio-based duration calculation.
-- `Jobs/ProcessAudioJob.cs` – chunked translation pipeline.
-- `Views/Admin/Logs.cshtml` – audit log viewer and stats.
-- `wwwroot/css/site.css` – UI spacing and styling.
+- **M4A duration**: Install Windows Media Foundation components
+- **Translator 404/401**: Verify endpoint includes `/translator/text/v3.0`, check key/region
+- **Long audio not transcribed**: Check Azure Speech quotas and audio quality
+- **MoMo payment errors**: Check signature encoding (UTF-8) and field order
 
-## Scripts & Pages
-- Upload: `/Audio/Upload`
-- Processing status: `/Audio/Processing/{id}`
-- User dashboard: `/Dashboard`
-- Admin dashboard: `/Admin/Dashboard`
-- Admin logs: `/Admin/Logs`
+## Documentation
 
-## Licensing
-Internal project; add license info here if needed.
+- [Azure Setup Guide](./AZURE_SETUP_GUIDE.md) - Hướng dẫn setup Azure services
+- [MoMo Payment Setup Guide](./MOMO_SETUP_GUIDE.md) - Hướng dẫn setup payment gateway
+- [Deployment Guide](./DEPLOYMENT_GUIDE.md) - Hướng dẫn deploy lên Azure chi tiết
+- [Quick Deploy Guide](./QUICK_DEPLOY.md) - Hướng dẫn deploy nhanh trong 15 phút
+
+## License
+
+Internal project.

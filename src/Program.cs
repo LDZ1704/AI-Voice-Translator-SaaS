@@ -6,6 +6,10 @@ using AI_Voice_Translator_SaaS.Services;
 using AI_Voice_Translator_SaaS.Middleware;
 using AIVoiceTranslator.Data;
 using Hangfire;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Authentication.Twitter;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using System.IO.Compression;
@@ -35,6 +39,34 @@ builder.Services.AddControllersWithViews();
 
 // Add HttpContextAccessor for accessing HttpContext in services
 builder.Services.AddHttpContextAccessor();
+
+// Add Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/Login";
+})
+.AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+{
+    options.ClientId = builder.Configuration["OAuth:Google:ClientId"] ?? "";
+    options.ClientSecret = builder.Configuration["OAuth:Google:ClientSecret"] ?? "";
+})
+.AddFacebook(FacebookDefaults.AuthenticationScheme, options =>
+{
+    options.AppId = builder.Configuration["OAuth:Facebook:AppId"] ?? "";
+    options.AppSecret = builder.Configuration["OAuth:Facebook:AppSecret"] ?? "";
+})
+.AddTwitter(TwitterDefaults.AuthenticationScheme, options =>
+{
+    options.ConsumerKey = builder.Configuration["OAuth:Twitter:ConsumerKey"] ?? "";
+    options.ConsumerSecret = builder.Configuration["OAuth:Twitter:ConsumerSecret"] ?? "";
+});
 
 // Add DbContext
 builder.Services.AddDbContext<AivoiceTranslatorContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -140,6 +172,7 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseSession();

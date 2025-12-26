@@ -85,5 +85,49 @@ namespace AI_Voice_Translator_SaaS.Services
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, password);
             return result != PasswordVerificationResult.Failed;
         }
+
+        public async Task<User> GetOrCreateOAuthUserAsync(string provider, string providerKey, string email, string displayName)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => 
+                u.OAuthProvider == provider && u.OAuthProviderKey == providerKey);
+
+            if (user != null)
+            {
+                user.LastLoginAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+                await _auditService.LogAsync(user.Id, "Login");
+                return user;
+            }
+
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (existingUser != null)
+            {
+                existingUser.OAuthProvider = provider;
+                existingUser.OAuthProviderKey = providerKey;
+                existingUser.LastLoginAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+                await _auditService.LogAsync(existingUser.Id, "Login");
+                return existingUser;
+            }
+
+            user = new User
+            {
+                Email = email,
+                DisplayName = displayName,
+                Role = "User",
+                SubscriptionTier = "Trial",
+                OAuthProvider = provider,
+                OAuthProviderKey = providerKey,
+                CreatedAt = DateTime.UtcNow,
+                LastLoginAt = DateTime.UtcNow,
+                IsActive = true
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            await _auditService.LogAsync(user.Id, "Register");
+
+            return user;
+        }
     }
 }

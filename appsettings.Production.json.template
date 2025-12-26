@@ -1,0 +1,60 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=tcp:YOUR-SERVER.database.windows.net,1433;Initial Catalog=YOUR-DB;User ID=YOUR-USERNAME;Password=YOUR-PASSWORD;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+    "Redis": "YOUR-REDIS-CACHE.redis.cache.windows.net:6380,password=YOUR-PASSWORD,ssl=True,abortConnect=False"
+  },
+  "StorageType": "Azure",
+  "Azure": {
+    "SpeechKey": "YOUR_SPEECH_KEY",
+    "SpeechRegion": "southeastasia",
+    "BlobConnectionString": "DefaultEndpointsProtocol=https;AccountName=YOUR-STORAGE-ACCOUNT;AccountKey=YOUR-ACCOUNT-KEY;EndpointSuffix=core.windows.net",
+    "AudioContainer": "audio-files",
+    "OutputContainer": "output-files"
+  },
+  "AzureTranslator": {
+    "Endpoint": "https://YOUR-TRANSLATOR-RESOURCE.cognitiveservices.azure.com/",
+    "Key": "YOUR_TRANSLATOR_KEY",
+    "Region": "southeastasia"
+  },
+  "CacheSettings": {
+    "DefaultExpirationMinutes": 60,
+    "TranslationCacheHours": 24,
+    "UserCacheDays": 7
+  },
+  "MoMoPayment": {
+    "MomoApiUrl": "https://payment.momo.vn/gw_payment/transactionProcessor",
+    "SecretKey": "YOUR_MOMO_SECRET_KEY",
+    "AccessKey": "YOUR_MOMO_ACCESS_KEY",
+    "ReturnUrl": "https://your-domain.com/Billing/PaymentReturn",
+    "NotifyUrl": "https://your-domain.com/Billing/PaymentNotify",
+    "PartnerCode": "YOUR_MOMO_PARTNER_CODE",
+    "RequestType": "captureMoMoWallet"
+  },
+  "OAuth": {
+    "Google": {
+      "ClientId": "YOUR_GOOGLE_CLIENT_ID",
+      "ClientSecret": "YOUR_GOOGLE_CLIENT_SECRET"
+    },
+    "Facebook": {
+      "AppId": "YOUR_FACEBOOK_APP_ID",
+      "AppSecret": "YOUR_FACEBOOK_APP_SECRET"
+    },
+    "Twitter": {
+      "ConsumerKey": "YOUR_TWITTER_CONSUMER_KEY",
+      "ConsumerSecret": "YOUR_TWITTER_CONSUMER_SECRET"
+    }
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Hangfire": "Information"
+    }
+  },
+  "AllowedHosts": "*"
+}
+
+
+
+
+
