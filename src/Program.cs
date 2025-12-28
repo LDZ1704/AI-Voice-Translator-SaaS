@@ -150,6 +150,12 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+// Load production config
+if (builder.Environment.IsProduction())
+{
+    builder.Configuration.AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true);
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
