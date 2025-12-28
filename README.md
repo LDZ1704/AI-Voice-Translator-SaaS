@@ -124,7 +124,6 @@ Cập nhật `src/appsettings.json`:
 - [Azure Setup Guide](./AZURE_SETUP_GUIDE.md) - Hướng dẫn setup Azure services
 - [MoMo Payment Setup Guide](./MOMO_SETUP_GUIDE.md) - Hướng dẫn setup payment gateway
 - [Deployment Guide](./DEPLOYMENT_GUIDE.md) - Hướng dẫn deploy lên Azure chi tiết
-- [Quick Deploy Guide](./QUICK_DEPLOY.md) - Hướng dẫn deploy nhanh trong 15 phút
 
 ## License
 
