@@ -49,12 +49,5 @@
             var safeName = string.Join("_", fileName.Split(invalidChars));
             return safeName;
         }
-
-        public static int GetAudioDuration(IFormFile file)
-        {
-            // TODO: Implement audio duration detection
-            // For now, return 0 (will be updated later)
-            return 0;
-        }
     }
 }

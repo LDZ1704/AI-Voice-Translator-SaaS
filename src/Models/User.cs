@@ -17,6 +17,12 @@ public partial class User
 
     public string? PasswordHash { get; set; }
 
+    [StringLength(50)]
+    public string? OAuthProvider { get; set; }
+
+    [StringLength(256)]
+    public string? OAuthProviderKey { get; set; }
+
     [StringLength(100)]
     public string DisplayName { get; set; } = null!;
 
@@ -25,6 +31,8 @@ public partial class User
 
     [StringLength(20)]
     public string SubscriptionTier { get; set; } = null!;
+
+    public DateTime? SubscriptionExpiryDate { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

@@ -1,4 +1,5 @@
 ﻿using AI_Voice_Translator_SaaS.Data;
+using AI_Voice_Translator_SaaS.Interfaces;
 using AI_Voice_Translator_SaaS.Models;
 using AI_Voice_Translator_SaaS.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -10,11 +11,13 @@ namespace AI_Voice_Translator_SaaS.Services
     {
         private readonly AivoiceTranslatorContext _context;
         private readonly PasswordHasher<User> _passwordHasher;
+        private readonly IAuditService _auditService;
 
-        public AuthService(AivoiceTranslatorContext context)
+        public AuthService(AivoiceTranslatorContext context, IAuditService auditService)
         {
             _context = context;
             _passwordHasher = new PasswordHasher<User>();
+            _auditService = auditService;
         }
 
         public async Task<(bool Success, string Message, User User)> RegisterAsync(RegisterViewModel model)
@@ -30,7 +33,7 @@ namespace AI_Voice_Translator_SaaS.Services
                 Email = model.Email,
                 DisplayName = model.DisplayName,
                 Role = "User",
-                SubscriptionTier = "Free",
+                SubscriptionTier = "Trial",
                 CreatedAt = DateTime.UtcNow,
                 IsActive = true
             };
@@ -39,8 +42,7 @@ namespace AI_Voice_Translator_SaaS.Services
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-
-            await LogAuditAsync(user.Id, "Register");
+            await _auditService.LogAsync(user.Id, "Register");
 
             return (true, "Đăng ký thành công", user);
         }
@@ -68,8 +70,7 @@ namespace AI_Voice_Translator_SaaS.Services
 
             user.LastLoginAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
-
-            await LogAuditAsync(user.Id, "Login");
+            await _auditService.LogAsync(user.Id, "Login");
 
             return (true, "Đăng nhập thành công", user);
         }
@@ -85,16 +86,48 @@ namespace AI_Voice_Translator_SaaS.Services
             return result != PasswordVerificationResult.Failed;
         }
 
-        private async Task LogAuditAsync(Guid userId, string action)
+        public async Task<User> GetOrCreateOAuthUserAsync(string provider, string providerKey, string email, string displayName)
         {
-            var log = new AuditLog
+            var user = await _context.Users.FirstOrDefaultAsync(u => 
+                u.OAuthProvider == provider && u.OAuthProviderKey == providerKey);
+
+            if (user != null)
             {
-                UserId = userId,
-                Action = action,
-                Timestamp = DateTime.UtcNow
+                user.LastLoginAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+                await _auditService.LogAsync(user.Id, "Login");
+                return user;
+            }
+
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (existingUser != null)
+            {
+                existingUser.OAuthProvider = provider;
+                existingUser.OAuthProviderKey = providerKey;
+                existingUser.LastLoginAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+                await _auditService.LogAsync(existingUser.Id, "Login");
+                return existingUser;
+            }
+
+            user = new User
+            {
+                Email = email,
+                DisplayName = displayName,
+                Role = "User",
+                SubscriptionTier = "Trial",
+                OAuthProvider = provider,
+                OAuthProviderKey = providerKey,
+                CreatedAt = DateTime.UtcNow,
+                LastLoginAt = DateTime.UtcNow,
+                IsActive = true
             };
-            _context.AuditLogs.Add(log);
+
+            _context.Users.Add(user);
             await _context.SaveChangesAsync();
+            await _auditService.LogAsync(user.Id, "Register");
+
+            return user;
         }
     }
 }

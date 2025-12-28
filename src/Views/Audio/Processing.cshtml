@@ -70,13 +70,14 @@
 @section Scripts {
     <script>
         let checkCount = 0;
-        const maxChecks = 60; // 60 checks × 2s = 2 minutes max
+        const maxChecks = 60;
         const audioFileId = '@Model.Id';
 
         function checkStatus() {
             $.ajax({
                 url: '/Audio/GetStatus/' + audioFileId,
                 type: 'GET',
+                global: false,
                 success: function(data) {
                     checkCount++;
 
@@ -101,7 +102,7 @@
                     }
 
                     if (checkCount < maxChecks) {
-                        setTimeout(checkStatus, 2000);
+                        setTimeout(checkStatus, 10000);
                     } else {
                         alert('Quá trình xử lý đang mất nhiều thời gian. Vui lòng kiểm tra Dashboard sau.');
                         window.location.href = '/Dashboard';
@@ -110,7 +111,7 @@
                 error: function() {
                     console.error('Error checking status');
                     if (checkCount < maxChecks) {
-                        setTimeout(checkStatus, 2000);
+                        setTimeout(checkStatus, 10000);
                     }
                 }
             });

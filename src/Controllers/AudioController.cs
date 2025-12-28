@@ -4,7 +4,6 @@ using AI_Voice_Translator_SaaS.Jobs;
 using AI_Voice_Translator_SaaS.Models;
 using AI_Voice_Translator_SaaS.Models.ViewModels;
 using AI_Voice_Translator_SaaS.Repositories;
-using AI_Voice_Translator_SaaS.Services;
 using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,24 +14,47 @@ namespace AI_Voice_Translator_SaaS.Controllers
         private readonly IStorageService _storageService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<AudioController> _logger;
+        private readonly IAuditService _auditService;
+        private readonly IAudioDurationService _durationService;
+        private readonly ISubscriptionService _subscriptionService;
 
-        public AudioController(IStorageService storageService, IUnitOfWork unitOfWork, ILogger<AudioController> logger)
+        public AudioController(
+            IStorageService storageService,
+            IUnitOfWork unitOfWork,
+            ILogger<AudioController> logger,
+            IAuditService auditService,
+            IAudioDurationService durationService,
+            ISubscriptionService subscriptionService)
         {
             _storageService = storageService;
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _auditService = auditService;
+            _durationService = durationService;
+            _subscriptionService = subscriptionService;
         }
 
         //GET: /Audio/Upload
         [HttpGet]
-        public IActionResult Upload()
+        public async Task<IActionResult> Upload()
         {
-            var userId = HttpContext.Session.GetString("UserId");
-            if (string.IsNullOrEmpty(userId))
+            var userIdStr = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userIdStr))
             {
                 TempData["ErrorMessage"] = "Vui lòng đăng nhập để tải file";
                 return RedirectToAction("Login", "Account");
             }
+
+            var userId = Guid.Parse(userIdStr);
+            var plan = await _subscriptionService.GetCurrentPlanAsync(userId);
+            var used = await _subscriptionService.GetUsedConversionsAsync(userId);
+            var remaining = plan.ConversionLimit - used;
+
+            ViewBag.PlanName = plan.Name;
+            ViewBag.UsedConversions = used;
+            ViewBag.TotalConversions = plan.ConversionLimit;
+            ViewBag.RemainingConversions = remaining;
+            ViewBag.IsExpired = await _subscriptionService.IsSubscriptionExpiredAsync(userId);
 
             return View();
         }
@@ -56,6 +78,16 @@ namespace AI_Voice_Translator_SaaS.Controllers
 
                 var userId = Guid.Parse(userIdStr);
 
+                var quotaCheck = await _subscriptionService.EnsureCanUseConversionAsync(userId);
+                if (!quotaCheck.Success)
+                {
+                    return Json(new AudioUploadResponseDto
+                    {
+                        Success = false,
+                        Message = quotaCheck.Message
+                    });
+                }
+
                 var validation = FileValidator.ValidateAudioFile(file);
                 if (!validation.IsValid)
                 {
@@ -67,6 +99,7 @@ namespace AI_Voice_Translator_SaaS.Controllers
                 }
 
                 var fileUrl = await _storageService.UploadFileAsync(file, "audio");
+                var duration = await _durationService.GetDurationAsync(file);
 
                 var audioFile = new AudioFile
                 {
@@ -74,7 +107,7 @@ namespace AI_Voice_Translator_SaaS.Controllers
                     FileName = file.FileName,
                     OriginalFileUrl = fileUrl,
                     FileSizeBytes = file.Length,
-                    DurationSeconds = FileValidator.GetAudioDuration(file),
+                    DurationSeconds = duration > 0 ? duration : null,
                     Status = "Pending",
                     UploadedAt = DateTime.UtcNow
                 };
@@ -82,7 +115,7 @@ namespace AI_Voice_Translator_SaaS.Controllers
                 await _unitOfWork.AudioFiles.AddAsync(audioFile);
                 await _unitOfWork.SaveChangesAsync();
 
-                await LogAuditAsync(userId, "Upload", $"Uploaded file: {file.FileName}");
+                await _auditService.LogAsync(userId, "Upload", $"Uploaded file: {file.FileName}");
 
                 BackgroundJob.Enqueue<ProcessAudioJob>(job =>
                     job.ProcessAsync(audioFile.Id, targetLanguage));
@@ -115,11 +148,20 @@ namespace AI_Voice_Translator_SaaS.Controllers
         {
             try
             {
+                var userIdStr = HttpContext.Session.GetString("UserId");
+                if (string.IsNullOrEmpty(userIdStr))
+                {
+                    return Unauthorized();
+                }
+
+                var userId = Guid.Parse(userIdStr);
                 var audioFile = await _unitOfWork.AudioFiles.GetByIdAsync(id);
                 if (audioFile == null)
                 {
                     return NotFound();
                 }
+
+                await _auditService.LogAsync(userId, "Download", $"Downloaded audio file: {audioFile.FileName}");
 
                 var stream = await _storageService.DownloadFileAsync(audioFile.OriginalFileUrl);
                 return File(stream, "audio/mpeg", audioFile.FileName);
@@ -143,6 +185,7 @@ namespace AI_Voice_Translator_SaaS.Controllers
                     return Unauthorized();
                 }
 
+                var userId = Guid.Parse(userIdStr);
                 var audioFile = await _unitOfWork.AudioFiles.GetByIdAsync(id);
                 if (audioFile == null)
                 {
@@ -154,10 +197,13 @@ namespace AI_Voice_Translator_SaaS.Controllers
                     return Forbid();
                 }
 
+                var fileName = audioFile.FileName;
                 await _storageService.DeleteFileAsync(audioFile.OriginalFileUrl);
 
                 _unitOfWork.AudioFiles.Remove(audioFile);
                 await _unitOfWork.SaveChangesAsync();
+
+                await _auditService.LogAsync(userId, "Delete", $"Deleted audio file: {fileName}");
 
                 return Json(new { success = true, message = "Đã xóa file" });
             }
@@ -205,18 +251,54 @@ namespace AI_Voice_Translator_SaaS.Controllers
             return View(dto);
         }
 
-        private async Task LogAuditAsync(Guid userId, string action, string details = null)
+        [HttpGet]
+        public async Task<IActionResult> GetDetailedStatus(Guid id)
         {
-            var log = new AuditLog
+            var audioFile = await _unitOfWork.AudioFiles.GetByIdAsync(id);
+            if (audioFile == null)
             {
-                UserId = userId,
-                Action = action,
-                IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
-                UserAgent = HttpContext.Request.Headers["User-Agent"].ToString(),
-                Timestamp = DateTime.UtcNow
-            };
-            await _unitOfWork.AuditLogs.AddAsync(log);
-            await _unitOfWork.SaveChangesAsync();
+                return NotFound();
+            }
+
+            var progress = 0;
+            var message = "";
+
+            switch (audioFile.Status)
+            {
+                case "Pending":
+                    progress = 10;
+                    message = "Đang chờ xử lý...";
+                    break;
+                case "Processing":
+                    var transcript = await _unitOfWork.Transcripts.GetAllAsync().ContinueWith(t => t.Result.FirstOrDefault(tr => tr.AudioFileId == id));
+                    if (transcript != null)
+                    {
+                        progress = 60;
+                        message = "Đang dịch văn bản...";
+                    }
+                    else
+                    {
+                        progress = 30;
+                        message = "Đang nhận dạng giọng nói...";
+                    }
+                    break;
+                case "Completed":
+                    progress = 100;
+                    message = "Hoàn thành!";
+                    break;
+                case "Failed":
+                    progress = 0;
+                    message = "Xử lý thất bại";
+                    break;
+            }
+
+            return Json(new
+            {
+                status = audioFile.Status,
+                progress = progress,
+                message = message
+            });
         }
+
     }
 }

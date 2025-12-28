@@ -1,0 +1,268 @@
+﻿@model AI_Voice_Translator_SaaS.Models.ViewModels.AdminUsersViewModel
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="fas fa-users me-2 text-primary"></i>User Management
+        </h2>
+        <a href="/Admin/Dashboard" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3">
+                <div class="col-lg-8 col-md-6 d-flex flex-column">
+                    <label class="form-label fw-semibold small text-muted mb-2" style="height: 20px; line-height: 20px;">Search</label>
+                    <div class="input-group flex-grow-0" style="height: 38px;">
+                        <span class="input-group-text bg-light border-end-0 d-flex align-items-center" style="height: 38px;">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="Search by email or name..." value="@Model.SearchQuery" style="height: 38px;">
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 d-flex flex-column">
+                    <label class="form-label fw-semibold small text-muted mb-2" style="height: 20px; line-height: 20px;">&nbsp;</label>
+                    <div class="d-flex gap-2 flex-grow-0">
+                        <button type="submit" class="btn btn-primary flex-grow-1 d-flex align-items-center justify-content-center" style="height: 38px;">
+                            <i class="fas fa-search me-2"></i>Search
+                        </button>
+                        <a href="/Admin/Users" class="btn btn-outline-secondary d-flex align-items-center justify-content-center" style="height: 38px;">
+                            <i class="fas fa-redo me-2"></i>Reset
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>All Users (@Model.Users.Count)
+                </h5>
+                <button class="btn btn-sm btn-success" onclick="exportUsers()">
+                    <i class="fas fa-file-excel me-2"></i>Export
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="usersTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="20%">Email</th>
+                            <th width="15%">Display Name</th>
+                            <th width="8%">Role</th>
+                            <th width="12%">Subscription</th>
+                            <th width="10%">Status</th>
+                            <th width="10%">Joined</th>
+                            <th width="10%" class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int index = (Model.CurrentPage - 1) * 20 + 1;
+                        }
+                        @foreach (var user in Model.Users)
+                        {
+                            <tr id="user-row-@user.Id">
+                                <td>@index</td>
+                                <td>
+                                    <i class="fas fa-envelope text-muted me-2"></i>
+                                    @user.Email
+                                </td>
+                                <td>
+                                    <strong>@user.DisplayName</strong>
+                                    @if (user.LastLoginAt.HasValue)
+                                    {
+                                        <br>
+                                
+                                        <small class="text-muted">
+                                            Last login: @user.LastLoginAt.Value.ToString("dd/MM/yyyy")
+                                        </small>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.Role == "Admin")
+                                    {
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-shield-alt me-1"></i>Admin
+                                        </span>
+                                    }
+                                    else if (user.Role == "Premium")
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="fas fa-star me-1"></i>Premium
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">User</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.SubscriptionTier == "Premium")
+                                    {
+                                        <span class="badge bg-success">Premium</span>
+                                    }
+                                    else if (user.SubscriptionTier == "Standard")
+                                    {
+                                        <span class="badge bg-info">Standard</span>
+                                    }
+                                    else if (user.SubscriptionTier == "Basic")
+                                    {
+                                        <span class="badge bg-primary">Basic</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-dark">Trial</span>
+                                    }
+                                    @if (user.SubscriptionExpiryDate.HasValue && !user.SubscriptionTier.Equals("Trial", StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        var expiryUtc = user.SubscriptionExpiryDate.Value.Kind == DateTimeKind.Unspecified ? DateTime.SpecifyKind(user.SubscriptionExpiryDate.Value, DateTimeKind.Utc) : user.SubscriptionExpiryDate.Value.ToUniversalTime();
+                                        var expiryLocal = expiryUtc.AddHours(7);
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar-alt me-1"></i>@expiryLocal.ToString("dd/MM/yyyy")
+                                        </small>
+                                    }
+                                </td>
+                                <td>
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success status-badge" id="status-@user.Id">
+                                            <i class="fas fa-check-circle me-1"></i>Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary status-badge" id="status-@user.Id">
+                                            <i class="fas fa-times-circle me-1"></i>Inactive
+                                        </span>
+                                    }
+                                </td>
+                                <td>
+                                    <small>@user.CreatedAt.ToString("dd/MM/yyyy")</small>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group">
+                                        <button class="btn btn-sm btn-warning"
+                                                onclick="toggleUserStatus('@user.Id')"
+                                                title="Toggle Status">
+                                            <i class="fas fa-power-off"></i>
+                                        </button>
+                                        @if (user.Role != "Admin")
+                                        {
+                                            <button class="btn btn-sm btn-danger"
+                                                    onclick="deleteUser('@user.Id')"
+                                                    title="Delete User">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                            index++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <div class="card-footer bg-white">
+                <nav>
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" href="?page=@(Model.CurrentPage - 1)&search=@Model.SearchQuery">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        @for (int i = 1; i <= Model.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="?page=@i&search=@Model.SearchQuery">@i</a>
+                            </li>
+                        }
+
+                        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                            <a class="page-link" href="?page=@(Model.CurrentPage + 1)&search=@Model.SearchQuery">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleUserStatus(userId) {
+            if (confirm('Are you sure you want to toggle this user status?')) {
+                $.post('/Admin/ToggleUserStatus', { userId: userId }, function(response) {
+                    if (response.success) {
+                        const statusBadge = $('#status-' + userId);
+                        if (response.isActive) {
+                            statusBadge.removeClass('bg-secondary').addClass('bg-success');
+                            statusBadge.html('<i class="fas fa-check-circle me-1"></i>Active');
+                        } else {
+                            statusBadge.removeClass('bg-success').addClass('bg-secondary');
+                            statusBadge.html('<i class="fas fa-times-circle me-1"></i>Inactive');
+                        }
+                        toastr.success(response.message);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                }).fail(function() {
+                    toastr.error('Request failed');
+                });
+            }
+        }
+
+        function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                $.post('/Admin/DeleteUser', { userId: userId }, function(response) {
+                    if (response.success) {
+                        $('#user-row-' + userId).fadeOut(300, function() {
+                            $(this).remove();
+                        });
+                        toastr.success(response.message);
+                    } else {
+                        toastr.error(response.message);
+                    }
+                }).fail(function() {
+                    toastr.error('Request failed');
+                });
+            }
+        }
+
+        function exportUsers() {
+            toastr.info('Exporting users to CSV...');
+            window.location.href = '/Admin/ExportUsers';
+        }
+
+        $(document).ready(function() {
+            $('#usersTable').DataTable({
+                paging: false,
+                searching: false,
+                info: false,
+                ordering: true,
+                order: [[6, 'desc']]
+            });
+        });
+    </script>
+}

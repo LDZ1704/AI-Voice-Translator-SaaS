@@ -27,9 +27,9 @@
                             <label asp-for="Password" class="form-label">Mật khẩu</label>
                             <div class="input-group">
                                 <input asp-for="Password" type="password" class="form-control" id="password" placeholder="••••••••" />
-                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
-                                    <i class="bi bi-eye" id="toggleIcon"></i>
-                                </button>
+                                <span class="input-group-text bg-white" id="togglePassword" style="cursor: pointer;">
+                                    <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                                </span>
                             </div>
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
@@ -46,17 +46,28 @@
                         </div>
                     </form>
 
+                    <div class="mt-4">
+                        <div class="text-center mb-3">
+                            <span class="text-muted">Hoặc đăng nhập bằng</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a asp-action="ExternalLogin" asp-controller="Account" asp-route-provider="Google" class="btn btn-outline-danger">
+                                <i class="bi bi-google"></i> Google
+                            </a>
+                            <a asp-action="ExternalLogin" asp-controller="Account" asp-route-provider="Facebook" class="btn btn-outline-primary">
+                                <i class="bi bi-facebook"></i> Facebook
+                            </a>
+                            <a asp-action="ExternalLogin" asp-controller="Account" asp-route-provider="Twitter" class="btn btn-outline-info">
+                                <i class="bi bi-twitter"></i> Twitter
+                            </a>
+                        </div>
+                    </div>
+
                     <div class="text-center mt-4">
                         <p class="text-muted">
                             Chưa có tài khoản?
                             <a asp-action="Register" asp-controller="Account" class="text-primary fw-bold">Đăng ký ngay</a>
                         </p>
-                    </div>
-
-                    <div class="alert alert-info mt-4 small">
-                        <strong>Demo:</strong><br>
-                        Admin: admin@aivt.com / Admin@123<br>
-                        User: test@user.com / Test@123
                     </div>
                 </div>
             </div>

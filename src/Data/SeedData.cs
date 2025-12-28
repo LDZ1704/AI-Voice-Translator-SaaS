@@ -17,6 +17,7 @@ namespace AIVoiceTranslator.Data
             }
 
             var passwordHasher = new PasswordHasher<User>();
+            var seedDate = DateTime.UtcNow;
 
             var admin = new User
             {
@@ -24,6 +25,7 @@ namespace AIVoiceTranslator.Data
                 DisplayName = "Admin User",
                 Role = "Admin",
                 SubscriptionTier = "Premium",
+                SubscriptionExpiryDate = seedDate.AddDays(30),
                 IsActive = true
             };
             admin.PasswordHash = passwordHasher.HashPassword(admin, "Admin@123");
@@ -33,7 +35,8 @@ namespace AIVoiceTranslator.Data
                 Email = "test@user.com",
                 DisplayName = "Test User",
                 Role = "User",
-                SubscriptionTier = "Free"
+                SubscriptionTier = "Trial",
+                SubscriptionExpiryDate = null
             };
             testUser.PasswordHash = passwordHasher.HashPassword(testUser, "Test@123");
 

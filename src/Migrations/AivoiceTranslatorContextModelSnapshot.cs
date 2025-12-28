@@ -267,6 +267,14 @@ namespace AI_Voice_Translator_SaaS.Migrations
                     b.Property<DateTime?>("LastLoginAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("OAuthProvider")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("OAuthProviderKey")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -276,6 +284,9 @@ namespace AI_Voice_Translator_SaaS.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)")
                         .HasDefaultValue("User");
+
+                    b.Property<DateTime?>("SubscriptionExpiryDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SubscriptionTier")
                         .IsRequired()

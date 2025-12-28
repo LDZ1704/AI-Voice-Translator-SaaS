@@ -5,6 +5,34 @@
 <div class="container mt-5">
     <div class="row justify-content-center fade-in">
         <div class="col-lg-8">
+            @if (ViewBag.RemainingConversions != null)
+            {
+                <div class="alert @(ViewBag.RemainingConversions <= 5 ? "alert-warning" : "alert-info") mb-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-chart-line me-2"></i>
+                            <strong>Gói hiện tại:</strong> @ViewBag.PlanName | 
+                            <strong>Đã dùng:</strong> @ViewBag.UsedConversions / @ViewBag.TotalConversions lượt |
+                            <strong>Còn lại:</strong> <span class="fw-bold">@ViewBag.RemainingConversions lượt</span>
+                        </div>
+                        @if (ViewBag.RemainingConversions <= 5)
+                        {
+                            <a asp-controller="Billing" asp-action="Index" class="btn btn-sm btn-warning">
+                                <i class="fas fa-arrow-up me-1"></i> Nâng cấp ngay
+                            </a>
+                        }
+                    </div>
+                    @if (ViewBag.IsExpired == true)
+                    {
+                        <div class="mt-2">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong class="text-danger">Gói của bạn đã hết hạn. Vui lòng gia hạn để tiếp tục sử dụng.</strong>
+                            <a asp-controller="Billing" asp-action="Index" class="btn btn-sm btn-danger ms-2">Gia hạn ngay</a>
+                        </div>
+                    }
+                </div>
+            }
+
             <div class="card shadow-custom">
                 <div class="card-header text-center py-4">
                     <h3 class="mb-0">
@@ -98,8 +126,8 @@
                     <div class="card text-center">
                         <div class="card-body">
                             <i class="bi bi-stars text-primary fs-1"></i>
-                            <h6 class="mt-2">AI Powered</h6>
-                            <small class="text-muted">Gemini 1.5 Flash</small>
+                            <h6 class="mt-2">Translator API</h6>
+                            <small class="text-muted">Microsoft Azure Translator API</small>
                         </div>
                     </div>
                 </div>

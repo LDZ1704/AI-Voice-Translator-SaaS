@@ -1,4 +1,4 @@
-﻿namespace AI_Voice_Translator_SaaS.Services
+﻿namespace AI_Voice_Translator_SaaS.Interfaces
 {
     public interface ISpeechService
     {

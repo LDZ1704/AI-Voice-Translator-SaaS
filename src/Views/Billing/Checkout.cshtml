@@ -1,0 +1,61 @@
+@model AI_Voice_Translator_SaaS.Models.ViewModels.BillingCheckoutViewModel
+@{
+    ViewData["Title"] = "Thanh toán gói dịch vụ";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card shadow-custom">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h5 class="mb-0">Xác nhận thanh toán</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        Gói hiện tại: <strong>@Model.CurrentPlanName</strong>
+                    </p>
+                    <hr />
+                    <h5 class="mb-3">Gói bạn chọn</h5>
+                    <ul class="list-unstyled mb-4">
+                        <li><strong>@Model.PlanName</strong></li>
+                        <li>@Model.ConversionLimit lượt chuyển đổi</li>
+                        <li>Giá: <strong>@Model.PriceDisplay</strong></li>
+                    </ul>
+
+                    @if (Model.IsTrial)
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Gói Trial hoàn toàn miễn phí, không cần thanh toán.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-credit-card me-2"></i>
+                            <strong>Phương thức thanh toán:</strong> MoMo Wallet<br>
+                            Sau khi nhấn "Xác nhận thanh toán", bạn sẽ được chuyển đến cổng thanh toán MoMo để hoàn tất giao dịch.
+                        </div>
+                    }
+
+                    <form asp-action="Purchase" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="planId" value="@Model.PlanId" />
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Hủy
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check me-2"></i>Xác nhận thanh toán
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
