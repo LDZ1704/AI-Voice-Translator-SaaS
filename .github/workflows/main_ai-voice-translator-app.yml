@@ -23,19 +23,23 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      - name: Restore dependencies
+        run: dotnet restore AI-Voice-Translator-SaaS.sln
+        working-directory: src
+
       - name: Build with dotnet
         run: dotnet build AI-Voice-Translator-SaaS.sln --configuration Release --no-restore
         working-directory: src
 
-      - name: dotnet publish
-        run: dotnet publish AI-Voice-Translator-SaaS.sln -c Release -o ../myapp
+      - name: Publish
+        run: dotnet publish AI-Voice-Translator-SaaS.sln -c Release -o ${{github.workspace}}/myapp --no-build
         working-directory: src
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: myapp
+          path: ${{github.workspace}}/myapp
 
   deploy:
     runs-on: ubuntu-latest
