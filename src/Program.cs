@@ -1,4 +1,4 @@
-using AI_Voice_Translator_SaaS.Data;
+﻿using AI_Voice_Translator_SaaS.Data;
 using AI_Voice_Translator_SaaS.Interfaces;
 using AI_Voice_Translator_SaaS.Jobs;
 using AI_Voice_Translator_SaaS.Repositories;
@@ -154,6 +154,21 @@ using (var scope = app.Services.CreateScope())
 if (builder.Environment.IsProduction())
 {
     builder.Configuration.AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true);
+    using (var scope = app.Services.CreateScope())
+    {
+        try
+        {
+            var context = scope.ServiceProvider.GetRequiredService<AivoiceTranslatorContext>();
+            context.Database.Migrate();
+
+            await SeedData.Initialize(context);
+        }
+        catch (Exception ex)
+        {
+            var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred migrating the DB.");
+        }
+    }
 }
 
 // Configure the HTTP request pipeline.
