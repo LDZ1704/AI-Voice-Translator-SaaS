@@ -484,7 +484,9 @@ $RECYCLE.BIN/
 *.swp
 
 # Deployment files
-deploy.zip
-src/publish/
-*.Production.json
-!appsettings.Production.json.template
+appsettings.Production.json
+appsettings.Development.json
+*.user
+.vs/
+bin/
+obj/
