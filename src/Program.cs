@@ -80,7 +80,10 @@ builder.Services.AddHangfire(config => config
 
 builder.Services.AddHangfireServer();
 
-builder.Services.AddHealthChecks().AddDbContextCheck<AivoiceTranslatorContext>().AddRedis(builder.Configuration.GetConnectionString("Redis"));
+builder.Services.AddHealthChecks().AddDbContextCheck<AivoiceTranslatorContext>();
+
+builder.Services.AddDistributedMemoryCache();
+
 // Add Session
 builder.Services.AddSession(options =>
     {
@@ -104,7 +107,7 @@ builder.Services.AddScoped<ISpeechService, AzureSpeechService>();
 builder.Services.AddScoped<ITTSService, AzureTTSService>();
 builder.Services.AddScoped<ISubscriptionService, SubscriptionService>();
 builder.Services.AddScoped<IMoMoPaymentService, MoMoPaymentService>();
-builder.Services.AddSingleton<ICacheService, RedisCacheService>();
+builder.Services.AddSingleton<ICacheService, MemoryCacheService>();
 
 // Register Jobs
 builder.Services.AddScoped<ProcessAudioJob>();
@@ -122,13 +125,6 @@ else
 }
 
 builder.Services.AddHttpClient();
-
-// Add Redis Caching
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetConnectionString("Redis");
-    options.InstanceName = "AIVoiceTranslator_";
-});
 
 builder.Services.AddMemoryCache();
 
