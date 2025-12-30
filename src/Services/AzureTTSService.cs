@@ -1,5 +1,6 @@
 ﻿using AI_Voice_Translator_SaaS.Interfaces;
 using Microsoft.CognitiveServices.Speech;
+using Microsoft.CognitiveServices.Speech.Audio;
 
 namespace AI_Voice_Translator_SaaS.Services
 {
@@ -25,6 +26,7 @@ namespace AI_Voice_Translator_SaaS.Services
             try
             {
                 var config = SpeechConfig.FromSubscription(_subscriptionKey, _region);
+                config.SetSpeechSynthesisOutputFormat(SpeechSynthesisOutputFormat.Audio16Khz32KBitRateMonoMp3);
 
                 config.SpeechSynthesisVoiceName = language switch
                 {
@@ -34,7 +36,9 @@ namespace AI_Voice_Translator_SaaS.Services
                     _ => "en-US-JennyNeural"
                 };
 
-                using var synthesizer = new SpeechSynthesizer(config);
+                using var audioConfig = AudioConfig.FromDefaultSpeakerOutput();
+                using var synthesizer = new SpeechSynthesizer(config, null);
+
                 var result = await synthesizer.SpeakTextAsync(text);
 
                 if (result.Reason == ResultReason.SynthesizingAudioCompleted)
