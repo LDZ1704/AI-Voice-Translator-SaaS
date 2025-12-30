@@ -48,7 +48,7 @@ namespace AI_Voice_Translator_SaaS.Services
 
                 _logger.LogInformation("AzureTranslator cache miss - calling Azure Translator API");
 
-                string route = $"/translate?api-version=3.0&from={sourceLanguage}&to={targetLanguage}";
+                string route = $"/translator/text/v3.0/translate?api-version=3.0&from={sourceLanguage}&to={targetLanguage}";
 
                 var requestBody = new[]
                 {
