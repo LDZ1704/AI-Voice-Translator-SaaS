@@ -17,16 +17,19 @@
         </a>
     </div>
 
-    <div class="alert alert-info mt-3">
-        <i class="fas fa-info-circle me-2"></i>
-        File sẽ tự động xóa sau: <strong>@((Model.Output.ExpiryDate - DateTime.UtcNow).Days) ngày</strong>
-    </div>
+    @if (Model.Output != null)
+    {
+        <div class="alert alert-info mt-3">
+            <i class="fas fa-info-circle me-2"></i>
+            File sẽ tự động xóa sau: <strong>@((Model.Output.ExpiryDate - DateTime.UtcNow).Days) ngày</strong>
+        </div>
+    }
 
     <!-- File Info Card -->
     <div class="card shadow-custom mb-4 fade-in">
         <div class="card-header bg-gradient-primary text-white">
             <h5 class="mb-0">
-                <i class="fas fa-file-audio me-2"></i>@Model.AudioFile.FileName
+                <i class="fas fa-file-audio me-2"></i>@(Model.AudioFile.FileName ?? "Không có tên")
             </h5>
         </div>
         <div class="card-body">
@@ -52,6 +55,10 @@
                                 <i class="fas fa-times-circle me-1"></i>Thất bại
                             </span>
                         }
+                        else
+                        {
+                            <span class="badge bg-secondary">Chưa xác định</span>
+                        }
                     </p>
                     @{
                         var duration = Model.AudioFile.DurationSeconds ?? 0;
@@ -59,7 +66,14 @@
                         var uploadedLocal = uploadedUtc.AddHours(7);
                     }
                     <p><strong>Kích thước:</strong> @((Model.AudioFile.FileSizeBytes / (1024.0 * 1024)).ToString("0.##")) MB</p>
-                    <p><strong>Thời lượng:</strong> @if (duration > 0) { <text>@(duration / 60)m @(duration % 60)s</text> } else { <text>Chưa xác định</text> }</p>
+                    <p><strong>Thời lượng:</strong> @if (duration > 0) {
+                            <text>@(duration / 60)m @(duration % 60)s</text>
+                        } else
+                    {
+
+                        <text>Chưa xác định</text>
+                    }
+</p>
                 </div>
                 <div class="col-md-6">
                     <p><strong>Ngày tải lên:</strong> @uploadedLocal.ToString("dd/MM/yyyy HH:mm") (UTC+7)</p>
@@ -67,7 +81,7 @@
                     {
                         <p>
                             <strong>Ngôn ngữ phát hiện:</strong>
-                            <span class="badge bg-info">@GetLanguageName(Model.Transcript.DetectedLanguage)</span>
+                            <span class="badge bg-info">@GetLanguageName(Model.Transcript.DetectedLanguage ?? "N/A")</span>
                         </p>
                         <p><strong>Độ chính xác:</strong> @Model.Transcript.Confidence%</p>
                     }
@@ -87,7 +101,7 @@
             </div>
             <div class="card-body">
                 <div class="transcript-box p-4 bg-light rounded">
-                    <p class="mb-0" style="white-space: pre-wrap; line-height: 1.8;">@Model.Transcript.OriginalText</p>
+                    <p class="mb-0" style="white-space: pre-wrap; line-height: 1.8;">@(Model.Transcript.OriginalText ?? "Không có nội dung")</p>
                 </div>
                 <div class="mt-3">
                     <button class="btn btn-sm btn-outline-primary" onclick="copyText('original')">
@@ -104,12 +118,12 @@
                 <div class="card-header bg-gradient-primary text-white">
                     <h5 class="mb-0">
                         <i class="fas fa-language me-2"></i>Bản dịch
-                        <span class="badge bg-light text-dark ms-2">@GetLanguageName(Model.Translation.TargetLanguage)</span>
+                        <span class="badge bg-light text-dark ms-2">@GetLanguageName(Model.Translation.TargetLanguage ?? "N/A")</span>
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="transcript-box p-4 bg-light rounded">
-                        <p class="mb-0" id="translatedText" style="white-space: pre-wrap; line-height: 1.8;">@Model.Translation.TranslatedText</p>
+                        <p class="mb-0" id="translatedText" style="white-space: pre-wrap; line-height: 1.8;">@(Model.Translation.TranslatedText ?? "Không có nội dung")</p>
                     </div>
                     <div class="mt-3 d-flex gap-2">
                         <button class="btn btn-sm btn-outline-primary" onclick="copyText('translated')">
@@ -161,7 +175,7 @@
                         <div class="audio-player-container p-4 bg-light rounded">
                             <div class="d-flex align-items-center justify-content-between mb-3">
                                 <div>
-                                    <p class="mb-1"><strong>Giọng nói:</strong> @Model.Output.VoiceType (@Model.Output.VoiceModel)</p>
+                                    <p class="mb-1"><strong>Giọng nói:</strong> @(Model.Output.VoiceType ?? "N/A") (@(Model.Output.VoiceModel ?? "N/A"))</p>
                                     <p class="mb-0 text-muted small">Tạo lúc: @Model.Output.GeneratedAt.ToString("dd/MM/yyyy HH:mm")</p>
                                 </div>
                                 <div>
@@ -234,6 +248,8 @@
 @functions {
     string GetLanguageName(string code)
     {
+        if (string.IsNullOrEmpty(code)) return "N/A";
+
         return code switch
         {
             "vi" or "vi-VN" => "Tiếng Việt",
@@ -250,11 +266,13 @@
     <script>
         function copyText(type) {
             let text = type === 'original'
-                ? '@Html.Raw(Model.Transcript.OriginalText.Replace("\n", "\\n").Replace("\r", ""))'
+                ? '@Html.Raw((Model.Transcript?.OriginalText ?? "").Replace("\n", "\\n").Replace("\r", "").Replace("'", "\\'"))'
                 : document.getElementById('translatedText').innerText;
 
             navigator.clipboard.writeText(text).then(() => {
                 toastr.success('Đã sao chép văn bản!');
+            }).catch(() => {
+                toastr.error('Không thể sao chép');
             });
         }
 
@@ -292,20 +310,20 @@
 
         @if (Model.AudioFile.Status != null && Model.AudioFile.Status == "Processing")
         {
-                <text>
-                setInterval(function() {
-                    $.ajax({
-                        url: '/Audio/GetStatus/@Model.AudioFile.Id',
-                        type: 'GET',
-                        global: false,
-                        success: function(data) {
-                            if (data.status === 'Completed' || data.status === 'Failed') {
-                                location.reload();
+                    <text>
+                    setInterval(function() {
+                        $.ajax({
+                            url: '/Audio/GetStatus/@Model.AudioFile.Id',
+                            type: 'GET',
+                            global: false,
+                            success: function(data) {
+                                if (data.status === 'Completed' || data.status === 'Failed') {
+                                    location.reload();
+                                }
                             }
-                        }
-                    });
-                }, 10000);
-                </text>
+                        });
+                    }, 10000);
+                    </text>
         }
 
         function retryProcessing(audioFileId) {

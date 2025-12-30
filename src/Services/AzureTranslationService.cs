@@ -51,14 +51,28 @@ namespace AI_Voice_Translator_SaaS.Services
 
                 var baseUrl = _endpoint.TrimEnd('/');
                 string url;
-                if (baseUrl.Contains("cognitiveservices.azure.com") && !baseUrl.Contains("/translator/text/", StringComparison.OrdinalIgnoreCase))
+
+                if (baseUrl.Contains("cognitiveservices.azure.com"))
                 {
-                    url = $"{baseUrl}/translator/text/v3.0/translate?from={sourceLanguage}&to={targetLanguage}";
+                    if (!baseUrl.Contains("/translator/text/"))
+                    {
+                        url = $"{baseUrl}/translator/text/v3.0/translate?from={sourceLanguage}&to={targetLanguage}";
+                    }
+                    else
+                    {
+                        url = $"{baseUrl}/v3.0/translate?from={sourceLanguage}&to={targetLanguage}";
+                    }
                 }
-                else
+                else if (baseUrl.StartsWith("http://") || baseUrl.StartsWith("https://"))
                 {
                     url = $"{baseUrl}/translate?api-version=3.0&from={sourceLanguage}&to={targetLanguage}";
                 }
+                else
+                {
+                    url = $"https://{baseUrl}/translate?api-version=3.0&from={sourceLanguage}&to={targetLanguage}";
+                }
+
+                _logger.LogInformation("Azure Translator URL: {Url}", url);
 
                 var requestBody = new[]
                 {
@@ -68,9 +82,13 @@ namespace AI_Voice_Translator_SaaS.Services
                 var json = JsonSerializer.Serialize(requestBody);
                 using var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                _httpClient.DefaultRequestHeaders.Clear();
-                _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
-                _httpClient.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Region", _region);
+                var request = new HttpRequestMessage(HttpMethod.Post, url)
+                {
+                    Content = content
+                };
+
+                request.Headers.Add("Ocp-Apim-Subscription-Key", _subscriptionKey);
+                request.Headers.Add("Ocp-Apim-Subscription-Region", _region);
 
                 using var response = await _httpClient.PostAsync(url, content);
                 var responseString = await response.Content.ReadAsStringAsync();

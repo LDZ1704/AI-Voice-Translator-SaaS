@@ -9,7 +9,7 @@ Cloud-ready ASP.NET Core MVC app that converts uploaded audio into translated sp
 - **Translation**: Azure Translator Text API with chunked processing
 - **Text-to-Speech**: Azure Speech TTS to generate downloadable audio
 - **Duration Detection**: Accurate duration via NAudio
-- **Caching**: Redis caching for translation results
+- **Caching**: Memory caching for translation results
 - **Audit Logging**: Track Register, Login, Upload, Download, Delete
 - **Admin Dashboard**: User management, uploads, logs, statistics
 - **Subscription Management**: Trial, Basic, Standard, Premium plans with MoMo payment
@@ -19,7 +19,7 @@ Cloud-ready ASP.NET Core MVC app that converts uploaded audio into translated sp
 
 - **Backend**: .NET 8, ASP.NET Core MVC, Entity Framework Core (SQL Server)
 - **Azure Services**: Speech (STT/TTS), Translator, Blob Storage, SQL Database
-- **Caching**: Redis
+- **Caching**: Memory Cache
 - **Audio Processing**: NAudio
 - **Payment**: MoMo Payment Gateway
 - **Frontend**: jQuery, Bootstrap 5, Toastr
@@ -28,7 +28,7 @@ Cloud-ready ASP.NET Core MVC app that converts uploaded audio into translated sp
 
 - .NET 8 SDK
 - SQL Server (Azure SQL Database hoặc local)
-- Redis (optional, recommended for caching)
+- Memory Cache
 - Azure resources: Speech, Translator, Blob Storage
 - MoMo Business account (for payment)
 
@@ -71,7 +71,6 @@ Cập nhật `src/appsettings.json`:
 {
   "ConnectionStrings": {
     "DefaultConnection": "Server=.;Database=AI_Translator;Trusted_Connection=True;TrustServerCertificate=True",
-    "Redis": "localhost:6379"
   },
   "StorageType": "Azure",
   "Azure": {
@@ -92,6 +91,20 @@ Cập nhật `src/appsettings.json`:
     "AccessKey": "<access-key>",
     "PartnerCode": "MOMO",
     "RequestType": "captureMoMoWallet"
+  },
+  "OAuth": {
+    "Google": {
+      "ClientId": "<client-id>",
+      "ClientSecret": "<client-secret>"
+    },
+    "Facebook": {
+      "AppId": "<app-id>",
+      "AppSecret": "<app-secret>"
+    },
+    "Twitter": {
+      "ConsumerKey": "<app-id>",
+      "ConsumerSecret": "<app-secret>"
+    }
   }
 }
 ```
