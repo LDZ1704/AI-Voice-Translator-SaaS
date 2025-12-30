@@ -96,6 +96,7 @@ namespace AI_Voice_Translator_SaaS.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     _logger.LogError("Azure Translator error: {StatusCode} - {Body}", response.StatusCode, responseString);
+                    _logger.LogInformation("Translator config: Endpoint={_endpoint}, Region={_region}, KeyExists={HasKey}", _endpoint, _region, !string.IsNullOrEmpty(_subscriptionKey));
                     return (false, $"Azure Translator error: {response.StatusCode}");
                 }
 
